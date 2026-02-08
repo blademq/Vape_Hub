@@ -1112,6 +1112,8 @@ header {
   }
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -3208,40 +3210,110 @@ let categories = JSON.parse(localStorage.getItem('vapeCategories')) || [
 
 let products = JSON.parse(localStorage.getItem('vapeProducts')) || [
   // Chaser Lux 30ml 5%
-  { id: 1, name: 'Chaser Lux 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
-  { id: 2, name: 'Chaser Lux 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
-  { id: 3, name: 'Chaser Lux 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
-  { id: 4, name: 'Chaser Lux 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
-  
+  { id: 1, name: 'Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+    { id: 2, name: 'Chaser Lux 30ml 5% | Coconut Melon🥥🍈', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 3, name: 'Chaser Lux 30ml 5% | Vitamine 💊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 4, name: 'Chaser Lux 30ml 5% | Kiwi Passionfruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 5, name: 'Chaser Lux 30ml 5% | BLUEBERRY RASPBERRY NEW 💥', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 6, name: 'Chaser Lux 30ml 5% | Sangria', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 7, name: 'Chaser Lux 30ml 5% | Turbo mint ⚡️🥶', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+ё  
   // Chaser Lux 30ml 6%
-  { id: 5, name: 'Chaser Lux 30ml 6% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
-  { id: 6, name: 'Chaser Lux 30ml 6% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
-  { id: 7, name: 'Chaser Lux 30ml 6% - Дыня Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 8, name: 'Chaser Lux 30ml 6% | Sour Apple', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 9, name: 'Chaser Lux 30ml 6% | Blackberry Lemonade', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 10, name: 'Chaser Lux 30ml 6% | Sour Watermelon Candy', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 11, name: 'Chaser Lux 30ml 6% | Peach Yogurt', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 12, name: 'Chaser Lux 30ml 6% | Blueberry Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 13, name: 'Chaser Lux 30ml 6% | Grape Mint', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 14, name: 'Chaser Lux 30ml 6% | Watermelon Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 15, name: 'Chaser Lux 30ml 6% | Peach Tea', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 16, name: 'Chaser Lux 30ml 6% | Kiwi Passion Fruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 17, name: 'Chaser Lux 30ml 6% | Cider Berry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 18, name: 'Chaser Lux 30ml 6% | Coconut Melon', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+
   
   // Chaser for pods 30ml 5%
-  { id: 8, name: 'Chaser for pods 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 9, name: 'Chaser for pods 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 10, name: 'Chaser for pods 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 11, name: 'Chaser for pods 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
+  { id: 19, name: 'Chaser for pods 30ml 5% | Ягоди', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 20, name: 'Chaser for pods 30ml 5% | Блакитна малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 21, name: 'Chaser for pods 30ml 5% | М’ята', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 22, name: 'Chaser for pods 30ml 5% | Полуниця', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 23, name: 'Chaser for pods 30ml 5% | Кавун', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 24, name: 'Chaser for pods 30ml 5% | Диня', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 25, name: 'Chaser for pods 30ml 5% | Грейпфрут', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+{ id: 24, name: 'Chaser for pods 30ml 5% | Персик', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 25, name: 'Chaser for pods 30ml 5% | Жовта малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
   
   // CHASER LIMITINI EDITINI 30ML 5%
-  { id: 12, name: 'CHASER LIMITINI EDITINI 30ML 5% - Красный Апельсин', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
-  { id: 13, name: 'CHASER LIMITINI EDITINI 30ML 5% - Голубика Малина', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
-  { id: 14, name: 'CHASER LIMITINI EDITINI 30ML 5% - Манго Кокос', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, brand: 'chaser' },
+  { id: 26, name: 'CHASER LIMITINI EDITINI 30ML 5% | ALOE MINT', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 27, name: 'CHASER LIMITINI EDITINI 30ML 5% | JASMINE PEACH', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 28, name: 'CHASER LIMITINI EDITINI 30ML 5% | PINEAPPLE PASSION LIME', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
+  { id: 29, name: 'CHASER LIMITINI EDITINI 30ML 5% | BALERRINA CAPPUCCINO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 30, name: 'CHASER LIMITINI EDITINI 30ML 5% | GLORBO FRUTTODRILLO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 31, name: 'CHASER LIMITINI EDITINI 30ML 5% | TUNG TUNG TUNG SAHUR', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
   
   // Elfliq 30ml 5%
-  { id: 15, name: 'Elfliq 30ml 5% - Манго Персик Ананас', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
-  { id: 16, name: 'Elfliq 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
-  { id: 17, name: 'Elfliq 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
-  { id: 18, name: 'Elfliq 30ml 5% - Клубника Киви', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
+  { id: 32, name: 'Elfliq 30ml 5% | APPLE PEACH🍎🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 33, name: 'Elfliq 30ml 5% | BLACKBERRY LEMON🫐🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 34, name: 'Elfliq 30ml 5% | BLACKCURRANT ANISEED 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 35, name: 'Elfliq 30ml 5% | BLUE RAZZ LEMONADE 🩵🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 36, name: 'Elfliq 30ml 5% | BLUEBERRY 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 37, name: 'Elfliq 30ml 5% | PINK LEMONADE SODA 💓🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 38, name: 'Elfliq 30ml 5% | CHERRY 🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 39, name: 'Elfliq 30ml 5% | Cola 🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 40, name: 'Elfliq 30ml 5% | ELF JACK', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 41, name: 'Elfliq 30ml 5% | GRAPE 🍇', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 42, name: 'Elfliq 30ml 5% | CHERRY COLA 🍒🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 43, name: 'Elfliq 30ml 5% | P&B CLOUDD 💨', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 44, name: 'Elfliq 30ml 5% | PINA COLADA 🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 45, name: 'Elfliq 30ml 5% | Pink lemonade💓🍹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 46, name: 'Elfliq 30ml 5% | SOUR APPLE🍏', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 47, name: 'Elfliq 30ml 5% | STRAWBERRY ICE 🍓🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 48, name: 'Elfliq 30ml 5% | STRAWBERRY KIWI🍓🥝', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 49, name: 'Elfliq 30ml 5% | STRAWBERRY RASPBERRY CHERRY ICE 🍓🍒🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 50, name: 'Elfliq 30ml 5% | STRAWBERRY SNOOW 🍓❄️', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 51, name: 'Elfliq 30ml 5% | RHUBARB SNOOW', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 52, name: 'Elfliq 30ml 5% | PEACH ICE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 53, name: 'Elfliq 30ml 5% | BLUEBERRY SOUR RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 54, name: 'Elfliq 30ml 5% | SPEARMINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 55, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | APPLE PEAR 🍐🍎', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 56, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | WATERMELON CHERRY 🍉🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 57, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY CHERRY LEMON 🍓🍒🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 58, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY RASPBERRY POMEGRANATE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 59, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | CHERRY LEMON PEACH🍒🍋🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 60, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY ROSE MINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 61, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GRAPE CHERRY 🍇🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 62, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GREEN GRAPE ROSE 🍇🌹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 63, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | JASMINE RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 64, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE ICE 🍍🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 65, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | SOUR WATERMELON GUMMY 🍉🫧', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 66, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY BANANA 🍓🍌', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 67, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | MANGO PEACH', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 68, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE COLADA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 69, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINK LEMONADE SODA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+
+
   
   // Другие товары
-  { id: 19, name: 'Elf Bar Blueberry', category: 'Одноразки', price: 64.90, isNew: true },
-  { id: 20, name: 'HQD Cuvie Plus', category: 'Одноразки', price: 59.90 },
-  { id: 21, name: 'Voopoo Drag S', category: 'Поды', price: 179.90 },
-  { id: 22, name: 'GeekVape Aegis', category: 'Поды', price: 214.90 },
-  { id: 23, name: 'SMOK Nord 4', category: 'Поды', price: 149.90 },
-  { id: 24, name: 'VOOPOO PnP Pod', category: 'Картриджи', price: 24.90 }
+  { id: 70, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Ice 🫐🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 71, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Grape 🍓🍇', category: 'Одноразки', price: 80, isNew: true },
+  { id: 72, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blackberry Cranberry 🫐🍒', category: 'Одноразки', price: 80, isNew: true },
+  { id: 73, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Ice 🍉🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 74, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Watermelon 🍓🍉', category: 'Одноразки', price: 80, isNew: true },
+  { id: 75, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Peach Ice 🍑🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 76, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Ice 🍓🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 77, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blue Razz Ice 🔵🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 78, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Raspberry 🫐🍓', category: 'Одноразки', price: 80, isNew: true },
+  { id: 79, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Grape Mint 🍇🌿', category: 'Одноразки', price: 80, isNew: true },
+  { id: 80, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Bubble Gum 🍉🍬', category: 'Одноразки', price: 80, isNew: true },
+  { id: 81, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Apple Peach 🍎🍑', category: 'Одноразки', price: 80, isNew: true },
+  { id: 82, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Banana 🍓🍌', category: 'Одноразки', price: 80, isNew: true },
+  { id: 83, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Peach 🍓🍑', category: 'Одноразки', price: 80, isNew: true },
+  { id: 84, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Lemon Watermelon 🍋🍉', category: 'Одноразки', price: 80, isNew: true },
+  { id: 85, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | VMT', category: 'Одноразки', price: 80, isNew: true },
+  { id: 86, name: 'HQD Cuvie Plus', category: 'Одноразки', price: 59.90 },
+  { id: 87, name: 'VAPRESSO XROS 5 MINI | ЦВЕТА СПРАШИВАТЬ У МЕНЕНДЖЕРА!', category: 'Поды', price: 120 },
+  { id: 88, name: 'Катридж XROS 5 MINI | 3ml 0.4ом', category: 'Картриджи', price: 25 }
+  { id: 88, name: 'Катридж XROS 5 MINI | 2ml 0.6ом', category: 'Картриджи', price: 25 }
 ];
 
 let cart = JSON.parse(localStorage.getItem('vapeCart')) || [];
