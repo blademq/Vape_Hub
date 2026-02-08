@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VapeHub | Магазин вейп-продукции</title>
+<title>CloudHub | Магазин вейп-продукции</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 * {
@@ -1121,7 +1121,7 @@ header {
     <div class="logo-icon">
       <i class="fas fa-cloud"></i>
     </div>
-    <div class="logo-text">VapeHub<span class="currency">(zł)</span></div>
+    <div class="logo-text">CloudHub<span class="currency">(zł)</span></div>
   </div>
   
   <div class="header-actions">
@@ -1921,7 +1921,7 @@ function processTelegramPayment() {
   
   const total = cart.reduce((sum, item) => sum + item.price, 0);
   const itemsList = cart.map(item => `- ${item.name}: ${item.price.toFixed(2)} zł`).join('\n');
-  const message = `Заказ из VapeHub\n\nТовары:\n${itemsList}\n\nИтого: ${total.toFixed(2)} zł\n\nДля оформления заказа свяжитесь с менеджером: Заказ из VapeHub
+  const message = `Заказ из CloudHub\n\nТовары:\n${itemsList}\n\nИтого: ${total.toFixed(2)} zł\n\nДля оформления заказа свяжитесь с менеджером: Заказ из CloudHub
 
 Товары:
 - Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊: 50.00 zł
