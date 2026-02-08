@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>VapeHub | Магазин вейп-продукции</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -12,6 +12,8 @@
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+
 
 :root {
   --primary: #8a2be2;
@@ -97,11 +99,6 @@ header {
 .icon-btn:hover {
   background: var(--primary);
   transform: translateY(-2px);
-}
-
-/* Кнопка админки - скрыта по умолчанию */
-.icon-btn.admin-btn {
-  display: none;
 }
 
 /* Поиск */
@@ -860,24 +857,6 @@ header {
   border-color: var(--light);
 }
 
-.btn-logout {
-  background: linear-gradient(to right, var(--danger), #ff2e43);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 10px;
-}
-
-.btn-logout:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
-}
-
 .btn-warning {
   background: var(--warning);
   color: white;
@@ -987,84 +966,6 @@ header {
   font-size: 18px;
 }
 
-/* Окно ввода пароля */
-.password-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 10, 15, 0.95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.password-container {
-  background: var(--dark-light);
-  border-radius: 20px;
-  padding: 30px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-  text-align: center;
-}
-
-.password-icon {
-  font-size: 50px;
-  color: var(--primary);
-  margin-bottom: 20px;
-}
-
-.password-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  background: linear-gradient(to right, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.password-subtitle {
-  color: var(--gray);
-  margin-bottom: 25px;
-  font-size: 14px;
-}
-
-.password-input {
-  background: var(--dark);
-  border: 2px solid rgba(138, 43, 226, 0.3);
-  border-radius: 12px;
-  padding: 16px;
-  color: var(--light);
-  font-size: 16px;
-  width: 100%;
-  margin-bottom: 20px;
-  outline: none;
-  transition: all 0.3s;
-}
-
-.password-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
-}
-
-.password-error {
-  color: var(--danger);
-  font-size: 14px;
-  margin-bottom: 15px;
-  min-height: 20px;
-}
-
-.password-hint {
-  color: var(--gray);
-  font-size: 12px;
-  margin-top: 15px;
-  font-style: italic;
-}
-
 /* Анимации */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -1129,20 +1030,15 @@ header {
       <i class="fas fa-heart"></i>
       <div class="fav-badge" id="fav-badge">0</div>
     </div>
-    <!-- Кнопка админки - скрыта пока не введен пароль -->
-    <div class="icon-btn admin-btn" id="admin-btn" onclick="openAdmin()" style="display: none;">
+    <div class="icon-btn" onclick="openAdmin()">
       <i class="fas fa-user-cog"></i>
-    </div>
-    <!-- Кнопка для открытия окна пароля -->
-    <div class="icon-btn" id="admin-lock-btn" onclick="showPasswordOverlay()">
-      <i class="fas fa-lock"></i>
     </div>
   </div>
 </header>
 
 <main>
   <!-- Главная страница магазина -->
-  <div id="shop-page" style="display: block;">
+  <div id="shop-page">
     <div class="search-container">
       <div class="search-box">
         <i class="fas fa-search"></i>
@@ -1175,7 +1071,7 @@ header {
   </div>
   
   <!-- Страница категории -->
-  <div id="category-page" class="category-page" style="display: none;">
+  <div id="category-page" class="category-page">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1193,7 +1089,7 @@ header {
   </div>
   
   <!-- Страница выбора жидкостей -->
-  <div id="liquids-page" class="liquids-page" style="display: none;">
+  <div id="liquids-page" class="liquids-page">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1261,14 +1157,16 @@ header {
   </div>
   
   <!-- Страница конкретной жидкости -->
-  <div id="liquid-type-page" class="liquid-type-page" style="display: none;">
+  <div id="liquid-type-page" class="liquid-type-page">
     <div class="back-btn" onclick="backToLiquids()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад к выбору жидкостей</span>
     </div>
     
     <div class="liquid-type-header">
-      <div class="liquid-type-icon" id="liquid-type-icon"><i class="fas fa-crown"></i></div>
+      <div class="liquid-type-icon" id="liquid-type-icon">
+        <i class="fas fa-crown"></i>
+      </div>
       <div class="liquid-type-info">
         <div class="liquid-type-title" id="liquid-type-title">Chaser Lux</div>
         <div class="liquid-type-description" id="liquid-type-description">Премиальная линейка солей для POD-систем</div>
@@ -1277,13 +1175,13 @@ header {
     
     <div class="liquid-type-products">
       <div class="products-grid" id="liquid-type-products">
-        <!-- Товары типа жидкости будут добавлены через JS -->
+        <!-- Товары конкретного типа жидкости будут добавлены через JS -->
       </div>
     </div>
   </div>
   
   <!-- Страница корзины -->
-  <div id="cart-page" class="cart-page" style="display: none;">
+  <div id="cart-page" class="cart-page">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1305,7 +1203,7 @@ header {
   </div>
   
   <!-- Страница избранного -->
-  <div id="favorites-page" class="favorites-page" style="display: none;">
+  <div id="favorites-page" class="favorites-page">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1323,11 +1221,10 @@ header {
   </div>
   
   <!-- Админ панель -->
-  <div id="admin-panel" class="admin-panel" style="display: none;">
+  <div id="admin-panel" class="admin-panel">
     <div class="admin-title">
       <i class="fas fa-user-cog"></i>
       <span>Панель администратора</span>
-      <span style="margin-left: auto; font-size: 14px; color: var(--gray);">Вы вошли как администратор</span>
     </div>
     
     <div class="admin-tabs">
@@ -1342,10 +1239,7 @@ header {
         
         <select id="product-category" class="form-select">
           <option value="" disabled selected>Выберите категорию</option>
-          <option value="Жидкости">Жидкости</option>
-          <option value="Одноразки">Одноразки</option>
-          <option value="Поды">Поды</option>
-          <option value="Картриджи">Картриджи</option>
+          <!-- Категории будут добавлены через JS -->
         </select>
         
         <select id="liquid-type" class="form-select">
@@ -1403,9 +1297,6 @@ header {
     </div>
     
     <button class="btn-secondary" onclick="closeAdmin()" style="margin-top: 20px;">Закрыть панель</button>
-    <button class="btn-logout" onclick="logoutAdmin()" style="margin-top: 10px;">
-      <i class="fas fa-sign-out-alt"></i> Выйти из админки
-    </button>
   </div>
 </main>
 
@@ -1427,205 +1318,66 @@ header {
     <span>Избранное</span>
     <div class="fav-badge" id="nav-fav-badge">0</div>
   </div>
-</div>
-
-<!-- Окно ввода пароля -->
-<div id="password-overlay" class="password-overlay" style="display: none;">
-  <div class="password-container">
-    <div class="password-icon">
-      <i class="fas fa-lock"></i>
-    </div>
-    <div class="password-title">Доступ к админ-панели</div>
-    <div class="password-subtitle">Введите пароль для доступа к управлению магазином</div>
-    
-    <input type="password" id="admin-password" class="password-input" placeholder="Введите пароль" onkeypress="checkEnter(event)">
-    <div class="password-error" id="password-error"></div>
-    
-    <button class="btn-primary" onclick="checkPassword()" style="width: 100%;">
-      <i class="fas fa-unlock"></i> Войти
-    </button>
-    
-    <div class="password-hint" id="password-hint">Пароль знает только @jgxqq</div>
+  
+  <div class="nav-item">
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
   </div>
 </div>
 
 <script>
-// ========== НАСТРОЙКА АДМИНКИ ==========
-const ADMIN_PASSWORD = "vapehub2024"; 
-
-let isAdminAuthenticated = false;
-
-// ========== ОСНОВНЫЕ ДАННЫЕ ==========
-let categories = [
+// Инициализация данных
+let categories = JSON.parse(localStorage.getItem('vapeCategories')) || [
   { id: 1, name: 'Жидкости', icon: 'fa-tint', subcategories: [] },
   { id: 2, name: 'Одноразки', icon: 'fa-smoking', subcategories: [] },
   { id: 3, name: 'Поды', icon: 'fa-mobile-alt', subcategories: [] },
   { id: 4, name: 'Картриджи', icon: 'fa-prescription-bottle', subcategories: [] }
 ];
 
-let products = [
+let products = JSON.parse(localStorage.getItem('vapeProducts')) || [
   // Chaser Lux 30ml 5%
-  { id: 1, name: 'Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 2, name: 'Chaser Lux 30ml 5% | Coconut Melon🥥🍈', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 3, name: 'Chaser Lux 30ml 5% | Vitamine 💊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 4, name: 'Chaser Lux 30ml 5% | Kiwi Passionfruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 5, name: 'Chaser Lux 30ml 5% | BLUEBERRY RASPBERRY NEW 💥', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 6, name: 'Chaser Lux 30ml 5% | Sangria', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 7, name: 'Chaser Lux 30ml 5% | Turbo mint ⚡️🥶', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 1, name: 'Chaser Lux 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
+  { id: 2, name: 'Chaser Lux 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
+  { id: 3, name: 'Chaser Lux 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
+  { id: 4, name: 'Chaser Lux 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
   
   // Chaser Lux 30ml 6%
-  { id: 8, name: 'Chaser Lux 30ml 6% | Sour Apple', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 9, name: 'Chaser Lux 30ml 6% | Blackberry Lemonade', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 10, name: 'Chaser Lux 30ml 6% | Sour Watermelon Candy', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 11, name: 'Chaser Lux 30ml 6% | Peach Yogurt', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 12, name: 'Chaser Lux 30ml 6% | Blueberry Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 13, name: 'Chaser Lux 30ml 6% | Grape Mint', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 14, name: 'Chaser Lux 30ml 6% | Watermelon Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 15, name: 'Chaser Lux 30ml 6% | Peach Tea', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 16, name: 'Chaser Lux 30ml 6% | Kiwi Passion Fruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
-  { id: 17, name: 'Chaser Lux 30ml 6% | Cider Berry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
-  { id: 18, name: 'Chaser Lux 30ml 6% | Coconut Melon', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, brand: 'chaser' },
+  { id: 5, name: 'Chaser Lux 30ml 6% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 6, name: 'Chaser Lux 30ml 6% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 7, name: 'Chaser Lux 30ml 6% - Дыня Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
   
   // Chaser for pods 30ml 5%
-  { id: 19, name: 'Chaser for pods 30ml 5% | Ягоди', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 20, name: 'Chaser for pods 30ml 5% | Блакитна малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 21, name: 'Chaser for pods 30ml 5% | М\'ята', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 22, name: 'Chaser for pods 30ml 5% | Персик', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 23, name: 'Chaser for pods 30ml 5% | Полуниця', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 24, name: 'Chaser for pods 30ml 5% | Кавун', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 25, name: 'Chaser for pods 30ml 5% | Диня', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 26, name: 'Chaser for pods 30ml 5% | Грейпфрут', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
-  { id: 27, name: 'Chaser for pods 30ml 5% | Жовта малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 8, name: 'Chaser for pods 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
+  { id: 9, name: 'Chaser for pods 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
+  { id: 10, name: 'Chaser for pods 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
+  { id: 11, name: 'Chaser for pods 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
   
   // CHASER LIMITINI EDITINI 30ML 5%
-  { id: 28, name: 'CHASER LIMITINI EDITINI 30ML 5% | ALOE MINT', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
-  { id: 29, name: 'CHASER LIMITINI EDITINI 30ML 5% | JASMINE PEACH', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
-  { id: 30, name: 'CHASER LIMITINI EDITINI 30ML 5% | PINEAPPLE PASSION LIME', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
-  { id: 31, name: 'CHASER LIMITINI EDITINI 30ML 5% | BALERRINA CAPPUCCINO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
-  { id: 32, name: 'CHASER LIMITINI EDITINI 30ML 5% | GLORBO FRUTTODRILLO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
-  { id: 33, name: 'CHASER LIMITINI EDITINI 30ML 5% | TUNG TUNG TUNG SAHUR', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
+  { id: 12, name: 'CHASER LIMITINI EDITINI 30ML 5% - Красный Апельсин', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
+  { id: 13, name: 'CHASER LIMITINI EDITINI 30ML 5% - Голубика Малина', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
+  { id: 14, name: 'CHASER LIMITINI EDITINI 30ML 5% - Манго Кокос', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, brand: 'chaser' },
   
   // Elfliq 30ml 5%
-  { id: 34, name: 'Elfliq 30ml 5% | APPLE PEACH🍎🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 35, name: 'Elfliq 30ml 5% | BLACKBERRY LEMON🫐🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 36, name: 'Elfliq 30ml 5% | BLACKCURRANT ANISEED 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 37, name: 'Elfliq 30ml 5% | BLUE RAZZ LEMONADE 🩵🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 38, name: 'Elfliq 30ml 5% | BLUEBERRY 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 39, name: 'Elfliq 30ml 5% | PINK LEMONADE SODA 💓🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 40, name: 'Elfliq 30ml 5% | CHERRY 🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 41, name: 'Elfliq 30ml 5% | Cola 🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 42, name: 'Elfliq 30ml 5% | ELF JACK', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 43, name: 'Elfliq 30ml 5% | GRAPE 🍇', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 44, name: 'Elfliq 30ml 5% | CHERRY COLA 🍒🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 45, name: 'Elfliq 30ml 5% | P&B CLOUDD 💨', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 46, name: 'Elfliq 30ml 5% | PINA COLADA 🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 47, name: 'Elfliq 30ml 5% | Pink lemonade💓🍹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 48, name: 'Elfliq 30ml 5% | SOUR APPLE🍏', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 49, name: 'Elfliq 30ml 5% | STRAWBERRY ICE 🍓🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 50, name: 'Elfliq 30ml 5% | STRAWBERRY KIWI🍓🥝', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 51, name: 'Elfliq 30ml 5% | STRAWBERRY RASPBERRY CHERRY ICE 🍓🍒🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 52, name: 'Elfliq 30ml 5% | STRAWBERRY SNOOW 🍓❄️', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 53, name: 'Elfliq 30ml 5% | RHUBARB SNOOW', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 54, name: 'Elfliq 30ml 5% | PEACH ICE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 55, name: 'Elfliq 30ml 5% | BLUEBERRY SOUR RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 56, name: 'Elfliq 30ml 5% | SPEARMINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 57, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | APPLE PEAR 🍐🍎', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 58, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | WATERMELON CHERRY 🍉🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
-  { id: 59, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY CHERRY LEMON 🍓🍒🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 60, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY RASPBERRY POMEGRANATE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 61, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | CHERRY LEMON PEACH🍒🍋🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 62, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY ROSE MINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 63, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GRAPE CHERRY 🍇🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 64, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GREEN GRAPE ROSE 🍇🌹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 65, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | JASMINE RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 66, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE ICE 🍍🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 67, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | SOUR WATERMELON GUMMY 🍉🫧', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 68, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY BANANA 🍓🍌', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 69, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | MANGO PEACH', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 70, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE COLADA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-  { id: 71, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINK LEMONADE SODA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
-
-  // Одноразки
-  { id: 72, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Ice 🫐🧊', category: 'Одноразки', price: 80, isNew: true },
-  { id: 73, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Grape 🍓🍇', category: 'Одноразки', price: 80, isNew: true },
-  { id: 74, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blackberry Cranberry 🫐🍒', category: 'Одноразки', price: 80, isNew: true },
-  { id: 75, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Ice 🍉🧊', category: 'Одноразки', price: 80, isNew: true },
-  { id: 76, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Watermelon 🍓🍉', category: 'Одноразки', price: 80, isNew: true },
-  { id: 77, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Peach Ice 🍑🧊', category: 'Одноразки', price: 80, isNew: true },
-  { id: 78, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Ice 🍓🧊', category: 'Одноразки', price: 80, isNew: true },
-  { id: 79, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blue Razz Ice 🔵🧊', category: 'Одноразки', price: 80, isNew: true },
-  { id: 80, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Raspberry 🫐🍓', category: 'Одноразки', price: 80, isNew: true },
-  { id: 81, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Grape Mint 🍇🌿', category: 'Одноразки', price: 80, isNew: true },
-  { id: 82, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Bubble Gum 🍉🍬', category: 'Одноразки', price: 80, isNew: true },
-  { id: 83, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Apple Peach 🍎🍑', category: 'Одноразки', price: 80, isNew: true },
-  { id: 84, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Banana 🍓🍌', category: 'Одноразки', price: 80, isNew: true },
-  { id: 85, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Peach 🍓🍑', category: 'Одноразки', price: 80, isNew: true },
-  { id: 86, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Lemon Watermelon 🍋🍉', category: 'Одноразки', price: 80, isNew: true },
-  { id: 87, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | VMT', category: 'Одноразки', price: 80, isNew: true },
+  { id: 15, name: 'Elfliq 30ml 5% - Манго Персик Ананас', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
+  { id: 16, name: 'Elfliq 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
+  { id: 17, name: 'Elfliq 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
+  { id: 18, name: 'Elfliq 30ml 5% - Клубника Киви', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
   
-  // Поды и картриджи
-  { id: 88, name: 'VAPRESSO XROS 5 MINI | ЦВЕТА СПРАШИВАТЬ У МЕНЕНДЖЕРА!', category: 'Поды', price: 120, isNew: true },
-  { id: 89, name: 'Катридж XROS 5 MINI | 3ml 0.4ом', category: 'Картриджи', price: 25, isNew: true },
-  { id: 90, name: 'Катридж XROS 5 MINI | 2ml 0.6ом', category: 'Картриджи', price: 25, isNew: true }
+  // Другие товары
+  { id: 19, name: 'Elf Bar Blueberry', category: 'Одноразки', price: 64.90, isNew: true },
+  { id: 20, name: 'HQD Cuvie Plus', category: 'Одноразки', price: 59.90 },
+  { id: 21, name: 'Voopoo Drag S', category: 'Поды', price: 179.90 },
+  { id: 22, name: 'GeekVape Aegis', category: 'Поды', price: 214.90 },
+  { id: 23, name: 'SMOK Nord 4', category: 'Поды', price: 149.90 },
+  { id: 24, name: 'VOOPOO PnP Pod', category: 'Картриджи', price: 24.90 }
 ];
 
-let cart = [];
-let favorites = [];
+let cart = JSON.parse(localStorage.getItem('vapeCart')) || [];
+let favorites = JSON.parse(localStorage.getItem('vapeFavorites')) || [];
 let currentCategory = '';
 let currentLiquidType = '';
 
-// ========== ФУНКЦИИ АВТОРИЗАЦИИ ==========
-function showPasswordOverlay() {
-  document.getElementById('password-overlay').style.display = 'flex';
-  document.getElementById('admin-password').value = '';
-  document.getElementById('password-error').textContent = '';
-  document.getElementById('admin-password').focus();
-}
-
-function closePasswordOverlay() {
-  document.getElementById('password-overlay').style.display = 'none';
-}
-
-function checkEnter(event) {
-  if (event.key === 'Enter') {
-    checkPassword();
-  }
-}
-
-function checkPassword() {
-  const passwordInput = document.getElementById('admin-password');
-  const password = passwordInput.value;
-  const errorElement = document.getElementById('password-error');
-  
-  if (password === ADMIN_PASSWORD) {
-    isAdminAuthenticated = true;
-    document.getElementById('admin-btn').style.display = 'flex';
-    document.getElementById('admin-lock-btn').style.display = 'none';
-    closePasswordOverlay();
-    showNotification('Доступ к админ-панели предоставлен');
-    openAdmin();
-  } else {
-    errorElement.textContent = 'Неверный пароль!';
-    passwordInput.style.borderColor = 'var(--danger)';
-    passwordInput.focus();
-    
-    setTimeout(() => {
-      passwordInput.value = '';
-      passwordInput.style.borderColor = 'rgba(138, 43, 226, 0.3)';
-      errorElement.textContent = '';
-    }, 2000);
-  }
-}
-
-function logoutAdmin() {
-  isAdminAuthenticated = false;
-  document.getElementById('admin-btn').style.display = 'none';
-  document.getElementById('admin-lock-btn').style.display = 'flex';
-  closeAdmin();
-  showNotification('Вы вышли из админ-панели');
-}
-
-// ========== ОСНОВНЫЕ ФУНКЦИИ МАГАЗИНА ==========
+// Сохранение данных
 function saveData() {
   localStorage.setItem('vapeCategories', JSON.stringify(categories));
   localStorage.setItem('vapeProducts', JSON.stringify(products));
@@ -1636,20 +1388,22 @@ function saveData() {
   updateCategoriesDisplay();
 }
 
+// Обновление счетчика корзины
 function updateCartBadge() {
-  const count = cart.length;
-  document.getElementById('cart-badge').textContent = count;
+  document.getElementById('cart-badge').textContent = cart.length;
+  document.querySelector('.nav-item:nth-child(2) .cart-badge').textContent = cart.length;
 }
 
+// Обновление счетчика избранного
 function updateFavoritesBadge() {
-  const count = favorites.length;
-  document.getElementById('fav-badge').textContent = count;
-  document.getElementById('nav-fav-badge').textContent = count;
+  document.getElementById('fav-badge').textContent = favorites.length;
+  document.getElementById('nav-fav-badge').textContent = favorites.length;
 }
 
+// Обновление отображения категорий
 function updateCategoriesDisplay() {
-  const container = document.getElementById('categories-container');
-  container.innerHTML = '';
+  const categoriesContainer = document.getElementById('categories-container');
+  categoriesContainer.innerHTML = '';
   
   categories.forEach(category => {
     const categoryCount = products.filter(p => p.category === category.name).length;
@@ -1670,10 +1424,21 @@ function updateCategoriesDisplay() {
       <div class="category-count">${categoryCount} товаров</div>
     `;
     
-    container.appendChild(categoryCard);
+    categoriesContainer.appendChild(categoryCard);
+  });
+  
+  const categorySelect = document.getElementById('product-category');
+  categorySelect.innerHTML = '<option value="" disabled selected>Выберите категорию</option>';
+  
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category.name;
+    option.textContent = category.name;
+    categorySelect.appendChild(option);
   });
 }
 
+// Отображение товаров
 function renderProducts(productsList = products, containerId = 'products-container') {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
@@ -1710,11 +1475,13 @@ function renderProducts(productsList = products, containerId = 'products-contain
   });
 }
 
+// Получение иконки для категории
 function getProductIcon(categoryName) {
   const category = categories.find(c => c.name === categoryName);
   return category ? category.icon : 'fa-shopping-bag';
 }
 
+// Поиск товаров
 function searchProducts(query) {
   if (query.trim() === '') {
     renderProducts();
@@ -1730,23 +1497,42 @@ function searchProducts(query) {
   renderProducts(filtered);
 }
 
-// ========== НАВИГАЦИЯ ==========
+// Открытие страницы выбора жидкостей
 function openLiquidsPage() {
-  hideAllPages();
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
   document.getElementById('liquids-page').style.display = 'block';
-  updateNavigation(0);
+  document.getElementById('liquid-type-page').style.display = 'none';
+  document.getElementById('cart-page').style.display = 'none';
+  document.getElementById('favorites-page').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'none';
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
 }
 
+// Открытие категории жидкостей по типу
 function openLiquidType(liquidType) {
   currentLiquidType = liquidType;
-  hideAllPages();
+  
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('liquids-page').style.display = 'none';
   document.getElementById('liquid-type-page').style.display = 'block';
+  document.getElementById('cart-page').style.display = 'none';
+  document.getElementById('favorites-page').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'none';
   
-  document.getElementById('liquid-type-title').textContent = liquidType;
-  
+  // Устанавливаем заголовок и описание
+  const title = document.getElementById('liquid-type-title');
   const description = document.getElementById('liquid-type-description');
   const icon = document.getElementById('liquid-type-icon');
   
+  title.textContent = liquidType;
+  
+  // Устанавливаем описание в зависимости от типа жидкости
   if (liquidType === 'Chaser Lux') {
     description.textContent = 'Премиальная линейка солей для POD-систем';
     icon.innerHTML = '<i class="fas fa-crown"></i>';
@@ -1761,69 +1547,82 @@ function openLiquidType(liquidType) {
     icon.innerHTML = '<i class="fas fa-leaf"></i>';
   }
   
+  // Фильтруем и отображаем товары
   const liquidProducts = products.filter(product => 
     product.category === 'Жидкости' && product.liquidType === liquidType
   );
   
   renderProducts(liquidProducts, 'liquid-type-products');
-  updateNavigation(0);
 }
 
+// Возврат к выбору жидкостей
 function backToLiquids() {
-  hideAllPages();
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
   document.getElementById('liquids-page').style.display = 'block';
-  updateNavigation(0);
+  document.getElementById('liquid-type-page').style.display = 'none';
+  document.getElementById('cart-page').style.display = 'none';
+  document.getElementById('favorites-page').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'none';
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
 }
 
+// Открытие категории
 function openCategory(categoryName) {
   currentCategory = categoryName;
-  hideAllPages();
+  
+  document.getElementById('shop-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'block';
+  document.getElementById('liquids-page').style.display = 'none';
+  document.getElementById('liquid-type-page').style.display = 'none';
+  document.getElementById('cart-page').style.display = 'none';
+  document.getElementById('favorites-page').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'none';
   
   document.getElementById('category-title').textContent = categoryName;
   
   const categoryProducts = products.filter(product => product.category === categoryName);
   renderProducts(categoryProducts, 'category-products');
   
-  updateNavigation(0);
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
 }
 
-function hideAllPages() {
-  document.getElementById('shop-page').style.display = 'none';
+// Возврат в магазин
+function backToShop() {
+  document.getElementById('shop-page').style.display = 'block';
   document.getElementById('category-page').style.display = 'none';
   document.getElementById('liquids-page').style.display = 'none';
   document.getElementById('liquid-type-page').style.display = 'none';
   document.getElementById('cart-page').style.display = 'none';
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
-}
-
-function backToShop() {
-  hideAllPages();
-  document.getElementById('shop-page').style.display = 'block';
-  updateNavigation(0);
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  
   renderProducts();
 }
 
+// Переход на главную
 function goToHome() {
   backToShop();
 }
 
-function updateNavigation(activeIndex) {
-  document.querySelectorAll('.nav-item').forEach((item, index) => {
-    if (index === activeIndex) {
-      item.classList.add('active');
-    } else {
-      item.classList.remove('active');
-    }
-  });
-}
-
+// Показать все товары
 function showAllProducts() {
   renderProducts(products);
 }
 
-// ========== КОРЗИНА ==========
+// Добавление в корзину
 function addToCart(productId) {
   const product = products.find(p => p.id === productId);
   if (product && !cart.some(item => item.id === productId)) {
@@ -1832,7 +1631,9 @@ function addToCart(productId) {
     
     const badge = document.getElementById('cart-badge');
     badge.style.transform = 'scale(1.3)';
-    setTimeout(() => badge.style.transform = 'scale(1)', 300);
+    setTimeout(() => {
+      badge.style.transform = 'scale(1)';
+    }, 300);
     
     showNotification(`Товар "${product.name}" добавлен в корзину`);
   } else if (cart.some(item => item.id === productId)) {
@@ -1840,13 +1641,25 @@ function addToCart(productId) {
   }
 }
 
+// Открытие страницы корзины
 function openCartPage() {
-  hideAllPages();
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('liquids-page').style.display = 'none';
+  document.getElementById('liquid-type-page').style.display = 'none';
   document.getElementById('cart-page').style.display = 'block';
-  updateNavigation(1);
+  document.getElementById('favorites-page').style.display = 'none';
+  document.getElementById('admin-panel').style.display = 'none';
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[1].classList.add('active');
+  
   renderCart();
 }
 
+// Отображение корзины
 function renderCart() {
   const container = document.getElementById('cart-items-container');
   const summaryContainer = document.getElementById('cart-summary-container');
@@ -1889,19 +1702,20 @@ function renderCart() {
         <span>Итого:</span>
         <span class="cart-total-amount">${total.toFixed(2)} zł</span>
       </div>
-      <button class="telegram-payment" onclick="processTelegramPayment()">
-        <i class="fab fa-telegram"></i>
+    <a href="https://t.me/managercloudm"> <button class="telegram-payment" onclick="window.location.href='https://t.me/managercloudm';"> </a>
+        <i class="fab fa-telegram" href="https://t.me/managercloudm"></i>
         Оплатить через Telegram
       </button>
       <div class="payment-info">
         <p>Для оформления заказа напишите менеджеру в Telegram:</p>
-        <div class="telegram-username">@jgxqq</div>
+        <div class="telegram-username" href="https://t.me/managercloudm">@managercloudm</div>
         <p>Сообщите менеджеру список товаров из корзины и общую сумму</p>
       </div>
     </div>
   `;
 }
 
+// Удаление из корзины
 function removeFromCart(productId) {
   const index = cart.findIndex(item => item.id === productId);
   if (index !== -1) {
@@ -1913,6 +1727,7 @@ function removeFromCart(productId) {
   }
 }
 
+// Оформление заказа через Telegram
 function processTelegramPayment() {
   if (cart.length === 0) {
     showNotification('Корзина пуста');
@@ -1921,11 +1736,10 @@ function processTelegramPayment() {
   
   const total = cart.reduce((sum, item) => sum + item.price, 0);
   const itemsList = cart.map(item => `- ${item.name}: ${item.price.toFixed(2)} zł`).join('\n');
-  const message = `Заказ из VapeHub\n\nТовары:\n${itemsList}\n\nИтого: ${total.toFixed(2)} zł\n\nДля оформления заказа свяжитесь с менеджером: @jgxqq`;
+  const message = `Заказ из VapeHub\n\nТовары:\n${itemsList}\n\nИтого: ${total.toFixed(2)} zł\n\nДля оформления заказа свяжитесь с менеджером: @managercloudm`;
   
-  showNotification(`Информация о заказе скопирована. Отправьте менеджеру @jgxqq в Telegram`);
+  showNotification(`Скопируйте информацию о заказе и отправьте менеджеру @managercloudm в Telegram`);
   
-  // Копирование в буфер
   const textArea = document.createElement('textarea');
   textArea.value = message;
   document.body.appendChild(textArea);
@@ -1934,7 +1748,7 @@ function processTelegramPayment() {
   document.body.removeChild(textArea);
 }
 
-// ========== ИЗБРАННОЕ ==========
+// Избранное
 function toggleFavorite(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
@@ -1953,7 +1767,6 @@ function toggleFavorite(productId) {
   saveData();
   updateFavoritesBadge();
   
-  // Обновляем иконку
   const favButtons = document.querySelectorAll(`[onclick="toggleFavorite(${productId})"]`);
   favButtons.forEach(btn => {
     if (index === -1) {
@@ -1970,17 +1783,30 @@ function toggleFavorite(productId) {
   }
 }
 
+// Открытие избранного из хедера
 function openFavorites() {
   openFavoritesPage();
 }
 
+// Открытие страницы избранного
 function openFavoritesPage() {
-  hideAllPages();
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('liquids-page').style.display = 'none';
+  document.getElementById('liquid-type-page').style.display = 'none';
+  document.getElementById('cart-page').style.display = 'none';
   document.getElementById('favorites-page').style.display = 'block';
-  updateNavigation(2);
+  document.getElementById('admin-panel').style.display = 'none';
+  
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item')[2].classList.add('active');
+  
   renderFavorites();
 }
 
+// Отображение избранного
 function renderFavorites() {
   const container = document.getElementById('favorites-container');
   
@@ -2015,9 +1841,12 @@ function renderFavorites() {
   });
 }
 
-// ========== АДМИН-ПАНЕЛЬ ==========
+// Админ панель - переключение вкладок
 function switchAdminTab(tabName) {
-  document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
   document.querySelectorAll('.admin-tab').forEach(tab => {
     if (tab.textContent === (tabName === 'products' ? 'Товары' : 'Категории')) {
       tab.classList.add('active');
@@ -2032,20 +1861,22 @@ function switchAdminTab(tabName) {
   }
 }
 
+// Админ панель
 function openAdmin() {
-  if (!isAdminAuthenticated) {
-    showPasswordOverlay();
-    return;
-  }
-  
-  hideAllPages();
   document.getElementById('admin-panel').style.display = 'block';
+  document.getElementById('shop-page').style.display = 'none';
+  document.getElementById('category-page').style.display = 'none';
+  document.getElementById('liquids-page').style.display = 'none';
+  document.getElementById('liquid-type-page').style.display = 'none';
+  document.getElementById('cart-page').style.display = 'none';
+  document.getElementById('favorites-page').style.display = 'none';
+  
   switchAdminTab('products');
   renderAdminProductsList();
 }
 
 function closeAdmin() {
-  hideAllPages();
+  document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('shop-page').style.display = 'block';
   
   document.getElementById('product-name').value = '';
@@ -2053,8 +1884,6 @@ function closeAdmin() {
   document.getElementById('liquid-type').value = '';
   document.getElementById('product-price').value = '';
   document.getElementById('category-name').value = '';
-  
-  updateNavigation(0);
 }
 
 function addProduct() {
@@ -2073,6 +1902,7 @@ function addProduct() {
     return;
   }
   
+  // Определяем бренд по типу жидкости
   let brand = '';
   if (category === 'Жидкости') {
     if (liquidType && liquidType.includes('Chaser')) brand = 'chaser';
@@ -2102,6 +1932,7 @@ function addProduct() {
   document.getElementById('product-price').value = '';
 }
 
+// Отображение списка товаров в админке для удаления
 function renderAdminProductsList() {
   const container = document.getElementById('admin-products-list');
   
@@ -2134,11 +1965,12 @@ function renderAdminProductsList() {
   });
 }
 
+// Удаление товара из админки
 function deleteProduct(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
   
-  if (confirm(`Удалить товар "${product.name}"?`)) {
+  if (confirm(`Вы уверены, что хотите удалить товар "${product.name}"?`)) {
     products = products.filter(p => p.id !== productId);
     cart = cart.filter(item => item.id !== productId);
     favorites = favorites.filter(item => item.id !== productId);
@@ -2159,6 +1991,7 @@ function deleteProduct(productId) {
   }
 }
 
+// Управление категориями
 function addCategory() {
   const name = document.getElementById('category-name').value;
   const icon = document.getElementById('category-icon').value;
@@ -2169,7 +2002,7 @@ function addCategory() {
   }
   
   if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-    showNotification('Такая категория уже существует');
+    showNotification('Категория с таким названием уже существует');
     return;
   }
   
@@ -2189,6 +2022,7 @@ function addCategory() {
   document.getElementById('category-name').value = '';
 }
 
+// Отображение списка категорий в админке
 function renderAdminCategoriesList() {
   const container = document.getElementById('admin-categories-list');
   
@@ -2223,6 +2057,7 @@ function renderAdminCategoriesList() {
   });
 }
 
+// Удаление категории
 function deleteCategory(categoryId) {
   const category = categories.find(c => c.id === categoryId);
   if (!category) return;
@@ -2230,7 +2065,7 @@ function deleteCategory(categoryId) {
   const productsInCategory = products.filter(p => p.category === category.name);
   
   if (productsInCategory.length > 0) {
-    if (!confirm(`В категории "${category.name}" есть ${productsInCategory.length} товаров. Они тоже будут удалены. Продолжить?`)) {
+    if (!confirm(`В категории "${category.name}" есть ${productsInCategory.length} товаров. При удалении категории эти товары также будут удалены. Продолжить?`)) {
       return;
     }
     
@@ -2247,7 +2082,7 @@ function deleteCategory(categoryId) {
   showNotification(`Категория "${category.name}" удалена`);
 }
 
-// ========== УТИЛИТЫ ==========
+// Уведомление
 function showNotification(message) {
   const notification = document.createElement('div');
   notification.style.cssText = `
@@ -2273,39 +2108,23 @@ function showNotification(message) {
   setTimeout(() => {
     notification.style.opacity = '0';
     notification.style.transition = 'opacity 0.5s';
-    setTimeout(() => document.body.removeChild(notification), 500);
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 500);
   }, 3000);
 }
 
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
+// Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', function() {
-  // Загрузка данных из localStorage
-  const savedCategories = localStorage.getItem('vapeCategories');
-  const savedProducts = localStorage.getItem('vapeProducts');
-  const savedCart = localStorage.getItem('vapeCart');
-  const savedFavorites = localStorage.getItem('vapeFavorites');
-  
-  if (savedCategories) categories = JSON.parse(savedCategories);
-  if (savedProducts) products = JSON.parse(savedProducts);
-  if (savedCart) cart = JSON.parse(savedCart);
-  if (savedFavorites) favorites = JSON.parse(savedFavorites);
-  
-  // Инициализация магазина
   renderProducts();
   updateCartBadge();
   updateFavoritesBadge();
   updateCategoriesDisplay();
   
-  // Закрытие окна пароля при клике на оверлей
-  document.getElementById('password-overlay').addEventListener('click', function(e) {
-    if (e.target.id === 'password-overlay') {
-      closePasswordOverlay();
-    }
+  document.querySelectorAll('.category-card, .product-card').forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
   });
-  
-  console.log('Магазин загружен! Всего товаров:', products.length);
 });
 </script>
-
 </body>
 </html>
