@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="ru"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VapeHub | Магазин вейп-продукции</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -12,8 +11,6 @@
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-
 
 :root {
   --primary: #8a2be2;
@@ -99,6 +96,11 @@ header {
 .icon-btn:hover {
   background: var(--primary);
   transform: translateY(-2px);
+}
+
+/* Кнопка админки - скрыта по умолчанию */
+.icon-btn.admin-btn {
+  display: none;
 }
 
 /* Поиск */
@@ -857,6 +859,24 @@ header {
   border-color: var(--light);
 }
 
+.btn-logout {
+  background: linear-gradient(to right, var(--danger), #ff2e43);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+}
+
 .btn-warning {
   background: var(--warning);
   color: white;
@@ -966,6 +986,84 @@ header {
   font-size: 18px;
 }
 
+/* Окно ввода пароля */
+.password-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.password-container {
+  background: var(--dark-light);
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.password-icon {
+  font-size: 50px;
+  color: var(--primary);
+  margin-bottom: 20px;
+}
+
+.password-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.password-subtitle {
+  color: var(--gray);
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.password-input {
+  background: var(--dark);
+  border: 2px solid rgba(138, 43, 226, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--light);
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 20px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.password-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+}
+
+.password-error {
+  color: var(--danger);
+  font-size: 14px;
+  margin-bottom: 15px;
+  min-height: 20px;
+}
+
+.password-hint {
+  color: var(--gray);
+  font-size: 12px;
+  margin-top: 15px;
+  font-style: italic;
+}
+
 /* Анимации */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -1014,6 +1112,8 @@ header {
   }
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -1030,15 +1130,20 @@ header {
       <i class="fas fa-heart"></i>
       <div class="fav-badge" id="fav-badge">0</div>
     </div>
-    <div class="icon-btn" onclick="openAdmin()">
+    <!-- Кнопка админки - скрыта пока не введен пароль -->
+    <div class="icon-btn admin-btn" id="admin-btn" onclick="openAdmin()" style="display: none;">
       <i class="fas fa-user-cog"></i>
+    </div>
+    <!-- Кнопка для открытия окна пароля -->
+    <div class="icon-btn" id="admin-lock-btn" onclick="showPasswordOverlay()">
+      <i class="fas fa-lock"></i>
     </div>
   </div>
 </header>
 
 <main>
   <!-- Главная страница магазина -->
-  <div id="shop-page">
+  <div id="shop-page" style="display: block;">
     <div class="search-container">
       <div class="search-box">
         <i class="fas fa-search"></i>
@@ -1051,9 +1156,31 @@ header {
         <div class="section-title">Категории</div>
       </div>
       
-      <div class="categories" id="categories-container">
-        <!-- Категории будут добавлены через JS -->
+      <div class="categories" id="categories-container"><div class="category-card liquids" style="animation-delay: 0s;">
+      <div class="category-icon">
+        <i class="fas fa-tint"></i>
       </div>
+      <div class="category-name">Жидкости</div>
+      <div class="category-count">71 товаров</div>
+    </div><div class="category-card " style="animation-delay: 0.1s;">
+      <div class="category-icon">
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="category-name">Одноразки</div>
+      <div class="category-count">16 товаров</div>
+    </div><div class="category-card " style="animation-delay: 0.2s;">
+      <div class="category-icon">
+        <i class="fas fa-mobile-alt"></i>
+      </div>
+      <div class="category-name">Поды</div>
+      <div class="category-count">1 товаров</div>
+    </div><div class="category-card " style="animation-delay: 0.3s;">
+      <div class="category-icon">
+        <i class="fas fa-prescription-bottle"></i>
+      </div>
+      <div class="category-name">Картриджи</div>
+      <div class="category-count">2 товаров</div>
+    </div></div>
     </div>
     
     <div class="section">
@@ -1064,14 +1191,1452 @@ header {
         </a>
       </div>
       
-      <div class="products-grid" id="products-container">
-        <!-- Товары будут добавлены через JS -->
+      <div class="products-grid" id="products-container"><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
       </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(1)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(1)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Coconut Melon🥥🍈</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(2)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(2)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Vitamine 💊</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(3)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(3)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Kiwi Passionfruit Guava </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(4)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(4)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | BLUEBERRY RASPBERRY NEW 💥</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(5)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(5)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Sangria</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(6)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(6)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Turbo mint ⚡️🥶</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(7)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(7)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Sour Apple</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(8)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(8)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Blackberry Lemonade</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(9)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(9)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Sour Watermelon Candy</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(10)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(10)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Peach Yogurt </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(11)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(11)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Blueberry Raspberry  </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(12)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(12)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Grape Mint</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(13)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(13)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Watermelon Raspberry </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(14)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(14)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Peach Tea</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(15)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(15)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Kiwi Passion Fruit Guava </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(16)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(16)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Cider Berry </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(17)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(17)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Coconut Melon</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(18)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(18)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | ALOE MINT</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(19)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(19)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | JASMINE PEACH</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(20)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(20)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | PINEAPPLE PASSION LIME</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(21)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(21)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | BALERRINA CAPPUCCINO</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(22)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(22)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | GLORBO FRUTTODRILLO</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(23)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(23)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">CHASER LIMITINI EDITINI 30ML 5% | TUNG TUNG TUNG SAHUR</div>
+        <div class="product-category">Жидкости · CHASER LIMITINI EDITINI</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(24)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(24)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Ягоди</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(25)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(25)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Блакитна малина</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(26)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(26)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | М’ята</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(27)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(27)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Персик </div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(28)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(28)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Полуниця</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(29)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(29)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Кавун</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(30)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(30)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Диня</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(31)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(31)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Грейпфрут</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(32)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(32)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser for pods 30ml 5% | Жовта малина</div>
+        <div class="product-category">Жидкости · Chaser for pods</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(33)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(33)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | APPLE PEACH🍎🍑</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(34)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(34)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | BLACKBERRY LEMON🫐🍋</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(35)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(35)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | BLACKCURRANT ANISEED  🫐</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(36)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(36)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | BLUE RAZZ LEMONADE 🩵🍸</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(37)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(37)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | BLUEBERRY 🫐</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(38)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(38)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | PINK LEMONADE SODA 💓🍸</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(39)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(39)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | CHERRY 🍒</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(40)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(40)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | Cola 🫗</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(41)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(41)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | ELF JACK</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(42)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(42)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | GRAPE 🍇</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(43)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(43)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | CHERRY COLA 🍒🫗</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(44)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(44)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | P&amp;B CLOUDD 💨</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(45)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(45)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | PINA COLADA 🍸</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(46)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(46)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | Pink lemonade💓🍹</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(47)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(47)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | SOUR APPLE🍏</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(48)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(48)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | STRAWBERRY ICE 🍓🧊</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(49)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(49)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | STRAWBERRY KIWI🍓🥝</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(50)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(50)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | STRAWBERRY RASPBERRY CHERRY ICE 🍓🍒🧊 </div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(51)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(51)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | STRAWBERRY SNOOW 🍓❄️</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(52)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(52)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | RHUBARB SNOOW</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(53)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(53)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | PEACH ICE</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(54)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(54)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | BLUEBERRY SOUR RASPBERRY</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(55)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(55)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% | SPEARMINT</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(56)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(56)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | APPLE PEAR 🍐🍎</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(57)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(57)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | WATERMELON CHERRY 🍉🍒</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(58)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(58)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY CHERRY LEMON 🍓🍒🍋</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(59)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(59)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY RASPBERRY  POMEGRANATE </div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(60)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(60)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | CHERRY LEMON PEACH🍒🍋🍑</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(61)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(61)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY ROSE MINT</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(62)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(62)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GRAPE CHERRY 🍇🍒</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(63)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(63)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GREEN GRAPE ROSE 🍇🌹</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(64)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(64)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | JASMINE RASPBERRY </div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(65)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(65)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE ICE 🍍🧊</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(66)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(66)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | SOUR WATERMELON GUMMY 🍉🫧</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(67)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(67)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY BANANA 🍓🍌</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(68)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(68)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | MANGO PEACH</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(69)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(69)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE COLADA</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(70)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(70)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in elfiq">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINK LEMONADE SODA</div>
+        <div class="product-category">Жидкости · Elfliq</div>
+        <div class="product-price">45.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(71)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(71)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Ice 🫐🧊</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(72)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(72)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Grape 🍓🍇</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(73)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(73)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Blackberry Cranberry 🫐🍒</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(74)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(74)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Ice 🍉🧊</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(75)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(75)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Watermelon 🍓🍉</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(76)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(76)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Peach Ice 🍑🧊</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(77)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(77)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Ice 🍓🧊</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(78)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(78)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Blue Razz Ice 🔵🧊</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(79)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(79)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Raspberry 🫐🍓</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(80)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(80)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Grape Mint 🍇🌿</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(81)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(81)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Bubble Gum 🍉🍬</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(82)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(82)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Apple Peach 🍎🍑</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(83)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(83)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Banana 🍓🍌</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(84)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(84)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Peach 🍓🍑</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(85)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(85)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | Lemon Watermelon 🍋🍉</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(86)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(86)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-smoking"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">ELFBAR RAYA D3 - 25.000 PUFFS | VMT</div>
+        <div class="product-category">Одноразки</div>
+        <div class="product-price">80.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(87)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(87)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-mobile-alt"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">VAPRESSO XROS 5 MINI | ЦВЕТА СПРАШИВАТЬ У МЕНЕНДЖЕРА!</div>
+        <div class="product-category">Поды</div>
+        <div class="product-price">120.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(88)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(88)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-prescription-bottle"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Катридж XROS 5 MINI | 3ml 0.4ом</div>
+        <div class="product-category">Картриджи</div>
+        <div class="product-price">25.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(89)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(89)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in ">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-prescription-bottle"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Катридж XROS 5 MINI | 2ml 0.6ом</div>
+        <div class="product-category">Картриджи</div>
+        <div class="product-price">25.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(90)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(90)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div></div>
     </div>
   </div>
   
   <!-- Страница категории -->
-  <div id="category-page" class="category-page">
+  <div id="category-page" class="category-page" style="display: none;">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1089,7 +2654,7 @@ header {
   </div>
   
   <!-- Страница выбора жидкостей -->
-  <div id="liquids-page" class="liquids-page">
+  <div id="liquids-page" class="liquids-page" style="display: none;">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1157,16 +2722,14 @@ header {
   </div>
   
   <!-- Страница конкретной жидкости -->
-  <div id="liquid-type-page" class="liquid-type-page">
+  <div id="liquid-type-page" class="liquid-type-page" style="display: none;">
     <div class="back-btn" onclick="backToLiquids()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад к выбору жидкостей</span>
     </div>
     
     <div class="liquid-type-header">
-      <div class="liquid-type-icon" id="liquid-type-icon">
-        <i class="fas fa-crown"></i>
-      </div>
+      <div class="liquid-type-icon" id="liquid-type-icon"><i class="fas fa-crown"></i></div>
       <div class="liquid-type-info">
         <div class="liquid-type-title" id="liquid-type-title">Chaser Lux</div>
         <div class="liquid-type-description" id="liquid-type-description">Премиальная линейка солей для POD-систем</div>
@@ -1174,14 +2737,300 @@ header {
     </div>
     
     <div class="liquid-type-products">
-      <div class="products-grid" id="liquid-type-products">
-        <!-- Товары конкретного типа жидкости будут добавлены через JS -->
+      <div class="products-grid" id="liquid-type-products"><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
       </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(1)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(1)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Coconut Melon🥥🍈</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(2)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(2)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Vitamine 💊</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(3)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(3)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Kiwi Passionfruit Guava </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(4)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(4)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | BLUEBERRY RASPBERRY NEW 💥</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(5)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(5)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Sangria</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(6)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(6)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 5% | Turbo mint ⚡️🥶</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(7)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(7)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Sour Apple</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(8)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(8)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Blackberry Lemonade</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(9)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(9)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Sour Watermelon Candy</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(10)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(10)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Peach Yogurt </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(11)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(11)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Blueberry Raspberry  </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(12)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(12)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Grape Mint</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(13)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(13)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Watermelon Raspberry </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(14)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(14)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Peach Tea</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(15)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(15)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Kiwi Passion Fruit Guava </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(16)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(16)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Cider Berry </div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(17)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(17)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div><div class="product-card fade-in chaser">
+      <div class="product-image">
+        <div class="product-badge">NEW</div>
+        <i class="fas fa-tint"></i>
+      </div>
+      <div class="product-info">
+        <div class="product-name">Chaser Lux 30ml 6% | Coconut Melon</div>
+        <div class="product-category">Жидкости · Chaser Lux</div>
+        <div class="product-price">50.00 zł</div>
+        <div class="product-actions">
+          <button class="btn-cart" onclick="addToCart(18)">В корзину</button>
+          <button class="btn-fav " onclick="toggleFavorite(18)">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div></div>
     </div>
   </div>
   
   <!-- Страница корзины -->
-  <div id="cart-page" class="cart-page">
+  <div id="cart-page" class="cart-page" style="display: none;">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1203,7 +3052,7 @@ header {
   </div>
   
   <!-- Страница избранного -->
-  <div id="favorites-page" class="favorites-page">
+  <div id="favorites-page" class="favorites-page" style="display: none;">
     <div class="back-btn" onclick="backToShop()">
       <i class="fas fa-arrow-left"></i>
       <span>Назад в каталог</span>
@@ -1221,10 +3070,11 @@ header {
   </div>
   
   <!-- Админ панель -->
-  <div id="admin-panel" class="admin-panel">
+  <div id="admin-panel" class="admin-panel" style="display: none;">
     <div class="admin-title">
       <i class="fas fa-user-cog"></i>
       <span>Панель администратора</span>
+      <span style="margin-left: auto; font-size: 14px; color: var(--gray);">Вы вошли как администратор</span>
     </div>
     
     <div class="admin-tabs">
@@ -1237,13 +3087,10 @@ header {
       <div class="admin-form">
         <input type="text" id="product-name" class="form-input" placeholder="Название товара">
         
-        <select id="product-category" class="form-select">
-          <option value="" disabled selected>Выберите категорию</option>
-          <!-- Категории будут добавлены через JS -->
-        </select>
+        <select id="product-category" class="form-select"><option value="" disabled="" selected="">Выберите категорию</option><option value="Жидкости">Жидкости</option><option value="Одноразки">Одноразки</option><option value="Поды">Поды</option><option value="Картриджи">Картриджи</option></select>
         
         <select id="liquid-type" class="form-select">
-          <option value="" disabled selected>Тип жидкости (если применимо)</option>
+          <option value="" disabled="" selected="">Тип жидкости (если применимо)</option>
           <option value="Chaser Lux">Chaser Lux</option>
           <option value="Chaser for pods">Chaser for pods</option>
           <option value="CHASER LIMITINI EDITINI">CHASER LIMITINI EDITINI</option>
@@ -1297,6 +3144,9 @@ header {
     </div>
     
     <button class="btn-secondary" onclick="closeAdmin()" style="margin-top: 20px;">Закрыть панель</button>
+    <button class="btn-logout" onclick="logoutAdmin()" style="margin-top: 10px;">
+      <i class="fas fa-sign-out-alt"></i> Выйти из админки
+    </button>
   </div>
 </main>
 
@@ -1319,14 +3169,38 @@ header {
     <div class="fav-badge" id="nav-fav-badge">0</div>
   </div>
   
-  <div class="nav-item">
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
+
+
+<!-- Окно ввода пароля -->
+<div id="password-overlay" class="password-overlay" style="display: none;">
+  <div class="password-container">
+    <div class="password-icon">
+      <i class="fas fa-lock"></i>
+    </div>
+    <div class="password-title">Доступ к админ-панели</div>
+    <div class="password-subtitle">Введите пароль для доступа к управлению магазином</div>
+    
+    <input type="password" id="admin-password" class="password-input" placeholder="Введите пароль" onkeypress="checkEnter(event)">
+    <div class="password-error" id="password-error"></div>
+    
+    <button class="btn-primary" onclick="checkPassword()" style="width: 100%;">
+      <i class="fas fa-unlock"></i> Войти
+    </button>
+    
+    <div class="password-hint" id="password-hint">Пароль знает только @jgxqq</div>
   </div>
 </div>
 
 <script>
-// Инициализация данных
+// ========== НАСТРОЙКА АДМИНКИ ==========
+// ЗАМЕНИТЕ ЭТОТ ПАРОЛЬ НА СВОЙ СЕКРЕТНЫЙ ПАРОЛЬ!
+const ADMIN_PASSWORD = "vapehub2024"; 
+// Поменяйте "vapehub2024" на любой другой пароль, который запомните
+
+// Переменная для отслеживания авторизации
+let isAdminAuthenticated = false;
+
+// ========== ОСНОВНЫЕ ДАННЫЕ ==========
 let categories = JSON.parse(localStorage.getItem('vapeCategories')) || [
   { id: 1, name: 'Жидкости', icon: 'fa-tint', subcategories: [] },
   { id: 2, name: 'Одноразки', icon: 'fa-smoking', subcategories: [] },
@@ -1336,46 +3210,230 @@ let categories = JSON.parse(localStorage.getItem('vapeCategories')) || [
 
 let products = JSON.parse(localStorage.getItem('vapeProducts')) || [
   // Chaser Lux 30ml 5%
-  { id: 1, name: 'Chaser Lux 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
-  { id: 2, name: 'Chaser Lux 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, isNew: true, brand: 'chaser' },
-  { id: 3, name: 'Chaser Lux 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
-  { id: 4, name: 'Chaser Lux 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser Lux', price: 45.90, brand: 'chaser' },
-  
+  { id: 1, name: 'Chaser Lux 30ml 5% | Tropic Punch Orange🏝️🍊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+    { id: 2, name: 'Chaser Lux 30ml 5% | Coconut Melon🥥🍈', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 3, name: 'Chaser Lux 30ml 5% | Vitamine 💊', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 4, name: 'Chaser Lux 30ml 5% | Kiwi Passionfruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 5, name: 'Chaser Lux 30ml 5% | BLUEBERRY RASPBERRY NEW 💥', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 6, name: 'Chaser Lux 30ml 5% | Sangria', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+  { id: 7, name: 'Chaser Lux 30ml 5% | Turbo mint ⚡️🥶', category: 'Жидкости', liquidType: 'Chaser Lux', price: 50, isNew: true, brand: 'chaser' },
+ё  
   // Chaser Lux 30ml 6%
-  { id: 5, name: 'Chaser Lux 30ml 6% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
-  { id: 6, name: 'Chaser Lux 30ml 6% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
-  { id: 7, name: 'Chaser Lux 30ml 6% - Дыня Лед', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 8, name: 'Chaser Lux 30ml 6% | Sour Apple', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 9, name: 'Chaser Lux 30ml 6% | Blackberry Lemonade', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 10, name: 'Chaser Lux 30ml 6% | Sour Watermelon Candy', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 11, name: 'Chaser Lux 30ml 6% | Peach Yogurt', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 12, name: 'Chaser Lux 30ml 6% | Blueberry Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 13, name: 'Chaser Lux 30ml 6% | Grape Mint', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 14, name: 'Chaser Lux 30ml 6% | Watermelon Raspberry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 15, name: 'Chaser Lux 30ml 6% | Peach Tea', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 16, name: 'Chaser Lux 30ml 6% | Kiwi Passion Fruit Guava', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+  { id: 17, name: 'Chaser Lux 30ml 6% | Cider Berry', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, isNew: true, brand: 'chaser' },
+  { id: 18, name: 'Chaser Lux 30ml 6% | Coconut Melon', category: 'Жидкости', liquidType: 'Chaser Lux', price: 46.90, brand: 'chaser' },
+
   
   // Chaser for pods 30ml 5%
-  { id: 8, name: 'Chaser for pods 30ml 5% - Манго Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 9, name: 'Chaser for pods 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 10, name: 'Chaser for pods 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
-  { id: 11, name: 'Chaser for pods 30ml 5% - Клубника Банан', category: 'Жидкости', liquidType: 'Chaser for pods', price: 44.90, brand: 'chaser' },
+  { id: 19, name: 'Chaser for pods 30ml 5% | Ягоди', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 20, name: 'Chaser for pods 30ml 5% | Блакитна малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 21, name: 'Chaser for pods 30ml 5% | М’ята', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 22, name: 'Chaser for pods 30ml 5% | Полуниця', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 23, name: 'Chaser for pods 30ml 5% | Кавун', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 24, name: 'Chaser for pods 30ml 5% | Диня', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 25, name: 'Chaser for pods 30ml 5% | Грейпфрут', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+{ id: 24, name: 'Chaser for pods 30ml 5% | Персик', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
+  { id: 25, name: 'Chaser for pods 30ml 5% | Жовта малина', category: 'Жидкости', liquidType: 'Chaser for pods', price: 50, brand: 'chaser' },
   
   // CHASER LIMITINI EDITINI 30ML 5%
-  { id: 12, name: 'CHASER LIMITINI EDITINI 30ML 5% - Красный Апельсин', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
-  { id: 13, name: 'CHASER LIMITINI EDITINI 30ML 5% - Голубика Малина', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, isNew: true, brand: 'chaser' },
-  { id: 14, name: 'CHASER LIMITINI EDITINI 30ML 5% - Манго Кокос', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 47.90, brand: 'chaser' },
+  { id: 26, name: 'CHASER LIMITINI EDITINI 30ML 5% | ALOE MINT', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 27, name: 'CHASER LIMITINI EDITINI 30ML 5% | JASMINE PEACH', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 28, name: 'CHASER LIMITINI EDITINI 30ML 5% | PINEAPPLE PASSION LIME', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
+  { id: 29, name: 'CHASER LIMITINI EDITINI 30ML 5% | BALERRINA CAPPUCCINO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 30, name: 'CHASER LIMITINI EDITINI 30ML 5% | GLORBO FRUTTODRILLO', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, isNew: true, brand: 'chaser' },
+  { id: 31, name: 'CHASER LIMITINI EDITINI 30ML 5% | TUNG TUNG TUNG SAHUR', category: 'Жидкости', liquidType: 'CHASER LIMITINI EDITINI', price: 50, brand: 'chaser' },
   
   // Elfliq 30ml 5%
-  { id: 15, name: 'Elfliq 30ml 5% - Манго Персик Ананас', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
-  { id: 16, name: 'Elfliq 30ml 5% - Кола Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, isNew: true, brand: 'elfiq' },
-  { id: 17, name: 'Elfliq 30ml 5% - Арбуз Лед', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
-  { id: 18, name: 'Elfliq 30ml 5% - Клубника Киви', category: 'Жидкости', liquidType: 'Elfliq', price: 48.90, brand: 'elfiq' },
+  { id: 32, name: 'Elfliq 30ml 5% | APPLE PEACH🍎🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 33, name: 'Elfliq 30ml 5% | BLACKBERRY LEMON🫐🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 34, name: 'Elfliq 30ml 5% | BLACKCURRANT ANISEED 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 35, name: 'Elfliq 30ml 5% | BLUE RAZZ LEMONADE 🩵🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 36, name: 'Elfliq 30ml 5% | BLUEBERRY 🫐', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 37, name: 'Elfliq 30ml 5% | PINK LEMONADE SODA 💓🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 38, name: 'Elfliq 30ml 5% | CHERRY 🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 39, name: 'Elfliq 30ml 5% | Cola 🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 40, name: 'Elfliq 30ml 5% | ELF JACK', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 41, name: 'Elfliq 30ml 5% | GRAPE 🍇', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 42, name: 'Elfliq 30ml 5% | CHERRY COLA 🍒🫗', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 43, name: 'Elfliq 30ml 5% | P&B CLOUDD 💨', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 44, name: 'Elfliq 30ml 5% | PINA COLADA 🍸', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 45, name: 'Elfliq 30ml 5% | Pink lemonade💓🍹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 46, name: 'Elfliq 30ml 5% | SOUR APPLE🍏', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 47, name: 'Elfliq 30ml 5% | STRAWBERRY ICE 🍓🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 48, name: 'Elfliq 30ml 5% | STRAWBERRY KIWI🍓🥝', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 49, name: 'Elfliq 30ml 5% | STRAWBERRY RASPBERRY CHERRY ICE 🍓🍒🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 50, name: 'Elfliq 30ml 5% | STRAWBERRY SNOOW 🍓❄️', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 51, name: 'Elfliq 30ml 5% | RHUBARB SNOOW', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 52, name: 'Elfliq 30ml 5% | PEACH ICE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 53, name: 'Elfliq 30ml 5% | BLUEBERRY SOUR RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 54, name: 'Elfliq 30ml 5% | SPEARMINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+{ id: 55, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | APPLE PEAR 🍐🍎', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 56, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | WATERMELON CHERRY 🍉🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, isNew: true, brand: 'elfiq' },
+  { id: 57, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY CHERRY LEMON 🍓🍒🍋', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 58, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY RASPBERRY POMEGRANATE', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 59, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | CHERRY LEMON PEACH🍒🍋🍑', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 60, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | BLUEBERRY ROSE MINT', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 61, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GRAPE CHERRY 🍇🍒', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 62, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | GREEN GRAPE ROSE 🍇🌹', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 63, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | JASMINE RASPBERRY', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 64, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE ICE 🍍🧊', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 65, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | SOUR WATERMELON GUMMY 🍉🫧', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 66, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | STRAWBERRY BANANA 🍓🍌', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 67, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | MANGO PEACH', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 68, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINEAPPLE COLADA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+  { id: 69, name: 'Elfliq 30ml 5% EXCLUSIVE FLAVORS(ELFLIQ) | PINK LEMONADE SODA', category: 'Жидкости', liquidType: 'Elfliq', price: 45, brand: 'elfiq' },
+
+
   
   // Другие товары
-  { id: 19, name: 'Elf Bar Blueberry', category: 'Одноразки', price: 64.90, isNew: true },
-  { id: 20, name: 'HQD Cuvie Plus', category: 'Одноразки', price: 59.90 },
-  { id: 21, name: 'Voopoo Drag S', category: 'Поды', price: 179.90 },
-  { id: 22, name: 'GeekVape Aegis', category: 'Поды', price: 214.90 },
-  { id: 23, name: 'SMOK Nord 4', category: 'Поды', price: 149.90 },
-  { id: 24, name: 'VOOPOO PnP Pod', category: 'Картриджи', price: 24.90 }
+  { id: 70, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Ice 🫐🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 71, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Grape 🍓🍇', category: 'Одноразки', price: 80, isNew: true },
+  { id: 72, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blackberry Cranberry 🫐🍒', category: 'Одноразки', price: 80, isNew: true },
+  { id: 73, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Ice 🍉🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 74, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Watermelon 🍓🍉', category: 'Одноразки', price: 80, isNew: true },
+  { id: 75, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Peach Ice 🍑🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 76, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Ice 🍓🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 77, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blue Razz Ice 🔵🧊', category: 'Одноразки', price: 80, isNew: true },
+  { id: 78, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Blueberry Raspberry 🫐🍓', category: 'Одноразки', price: 80, isNew: true },
+  { id: 79, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Grape Mint 🍇🌿', category: 'Одноразки', price: 80, isNew: true },
+  { id: 80, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Watermelon Bubble Gum 🍉🍬', category: 'Одноразки', price: 80, isNew: true },
+  { id: 81, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Apple Peach 🍎🍑', category: 'Одноразки', price: 80, isNew: true },
+  { id: 82, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Banana 🍓🍌', category: 'Одноразки', price: 80, isNew: true },
+  { id: 83, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Strawberry Peach 🍓🍑', category: 'Одноразки', price: 80, isNew: true },
+  { id: 84, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | Lemon Watermelon 🍋🍉', category: 'Одноразки', price: 80, isNew: true },
+  { id: 85, name: 'ELFBAR RAYA D3 - 25.000 PUFFS | VMT', category: 'Одноразки', price: 80, isNew: true },
+  { id: 86, name: 'HQD Cuvie Plus', category: 'Одноразки', price: 59.90 },
+  { id: 87, name: 'VAPRESSO XROS 5 MINI | ЦВЕТА СПРАШИВАТЬ У МЕНЕНДЖЕРА!', category: 'Поды', price: 120 },
+  { id: 88, name: 'Катридж XROS 5 MINI | 3ml 0.4ом', category: 'Картриджи', price: 25 }
+  { id: 88, name: 'Катридж XROS 5 MINI | 2ml 0.6ом', category: 'Картриджи', price: 25 }
 ];
 
 let cart = JSON.parse(localStorage.getItem('vapeCart')) || [];
 let favorites = JSON.parse(localStorage.getItem('vapeFavorites')) || [];
 let currentCategory = '';
 let currentLiquidType = '';
+
+// ========== ФУНКЦИИ АВТОРИЗАЦИИ ==========
+
+// Показать окно ввода пароля
+function showPasswordOverlay() {
+  document.getElementById('password-overlay').style.display = 'flex';
+  document.getElementById('admin-password').value = '';
+  document.getElementById('password-error').textContent = '';
+  document.getElementById('admin-password').focus();
+}
+
+// Закрыть окно пароля
+function closePasswordOverlay() {
+  document.getElementById('password-overlay').style.display = 'none';
+}
+
+// Проверка пароля при нажатии Enter
+function checkEnter(event) {
+  if (event.key === 'Enter') {
+    checkPassword();
+  }
+}
+
+// Проверка введенного пароля
+function checkPassword() {
+  const passwordInput = document.getElementById('admin-password');
+  const password = passwordInput.value;
+  const errorElement = document.getElementById('password-error');
+  
+  if (password === ADMIN_PASSWORD) {
+    // Пароль правильный
+    isAdminAuthenticated = true;
+    
+    // Показываем кнопку админки
+    document.getElementById('admin-btn').style.display = 'flex';
+    
+    // Скрываем кнопку с замком
+    document.getElementById('admin-lock-btn').style.display = 'none';
+    
+    // Закрываем окно пароля
+    closePasswordOverlay();
+    
+    // Сохраняем в localStorage (на 1 час)
+    saveAdminSession();
+    
+    showNotification('Доступ к админ-панели предоставлен');
+    
+    // Автоматически открываем админ-панель
+    openAdmin();
+  } else {
+    // Неправильный пароль
+    errorElement.textContent = 'Неверный пароль!';
+    passwordInput.style.borderColor = 'var(--danger)';
+    passwordInput.focus();
+    
+    // Сбрасываем через 2 секунды
+    setTimeout(() => {
+      passwordInput.value = '';
+      passwordInput.style.borderColor = 'rgba(138, 43, 226, 0.3)';
+      errorElement.textContent = '';
+    }, 2000);
+  }
+}
+
+// Сохранение сессии админа
+function saveAdminSession() {
+  const authData = {
+    authenticated: true,
+    timestamp: new Date().getTime()
+  };
+  localStorage.setItem('vapeAdminAuth', JSON.stringify(authData));
+}
+
+// Проверка сохраненной сессии
+function checkSavedSession() {
+  const savedAuth = localStorage.getItem('vapeAdminAuth');
+  
+  if (savedAuth) {
+    try {
+      const authData = JSON.parse(savedAuth);
+      const currentTime = new Date().getTime();
+      const oneHour = 60 * 60 * 1000; // 1 час
+      
+      // Проверяем, не прошло ли больше часа
+      if (authData.authenticated && (currentTime - authData.timestamp) < oneHour) {
+        isAdminAuthenticated = true;
+        document.getElementById('admin-btn').style.display = 'flex';
+        document.getElementById('admin-lock-btn').style.display = 'none';
+      }
+    } catch (e) {
+      // Если ошибка при чтении, очищаем
+      localStorage.removeItem('vapeAdminAuth');
+    }
+  }
+}
+
+// Выход из админки
+function logoutAdmin() {
+  isAdminAuthenticated = false;
+  localStorage.removeItem('vapeAdminAuth');
+  
+  // Скрываем кнопку админки
+  document.getElementById('admin-btn').style.display = 'none';
+  
+  // Показываем кнопку с замком
+  document.getElementById('admin-lock-btn').style.display = 'flex';
+  
+  // Закрываем админ-панель
+  closeAdmin();
+  
+  showNotification('Вы вышли из админ-панели');
+}
+
+// ========== ОСНОВНЫЕ ФУНКЦИИ МАГАЗИНА ==========
 
 // Сохранение данных
 function saveData() {
@@ -1390,20 +3448,22 @@ function saveData() {
 
 // Обновление счетчика корзины
 function updateCartBadge() {
-  document.getElementById('cart-badge').textContent = cart.length;
-  document.querySelector('.nav-item:nth-child(2) .cart-badge').textContent = cart.length;
+  const count = cart.length;
+  document.getElementById('cart-badge').textContent = count;
+  document.querySelector('.nav-item:nth-child(2) .cart-badge').textContent = count;
 }
 
 // Обновление счетчика избранного
 function updateFavoritesBadge() {
-  document.getElementById('fav-badge').textContent = favorites.length;
-  document.getElementById('nav-fav-badge').textContent = favorites.length;
+  const count = favorites.length;
+  document.getElementById('fav-badge').textContent = count;
+  document.getElementById('nav-fav-badge').textContent = count;
 }
 
 // Обновление отображения категорий
 function updateCategoriesDisplay() {
-  const categoriesContainer = document.getElementById('categories-container');
-  categoriesContainer.innerHTML = '';
+  const container = document.getElementById('categories-container');
+  container.innerHTML = '';
   
   categories.forEach(category => {
     const categoryCount = products.filter(p => p.category === category.name).length;
@@ -1424,12 +3484,12 @@ function updateCategoriesDisplay() {
       <div class="category-count">${categoryCount} товаров</div>
     `;
     
-    categoriesContainer.appendChild(categoryCard);
+    container.appendChild(categoryCard);
   });
   
+  // Обновляем список категорий в форме добавления товара
   const categorySelect = document.getElementById('product-category');
   categorySelect.innerHTML = '<option value="" disabled selected>Выберите категорию</option>';
-  
   categories.forEach(category => {
     const option = document.createElement('option');
     option.value = category.name;
@@ -1497,6 +3557,8 @@ function searchProducts(query) {
   renderProducts(filtered);
 }
 
+// ========== НАВИГАЦИЯ ==========
+
 // Открытие страницы выбора жидкостей
 function openLiquidsPage() {
   document.getElementById('shop-page').style.display = 'none';
@@ -1507,13 +3569,10 @@ function openLiquidsPage() {
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  updateNavigation(0);
 }
 
-// Открытие категории жидкостей по типу
+// Открытие типа жидкости
 function openLiquidType(liquidType) {
   currentLiquidType = liquidType;
   
@@ -1525,14 +3584,13 @@ function openLiquidType(liquidType) {
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
   
-  // Устанавливаем заголовок и описание
-  const title = document.getElementById('liquid-type-title');
+  // Устанавливаем заголовок
+  document.getElementById('liquid-type-title').textContent = liquidType;
+  
+  // Устанавливаем описание и иконку
   const description = document.getElementById('liquid-type-description');
   const icon = document.getElementById('liquid-type-icon');
   
-  title.textContent = liquidType;
-  
-  // Устанавливаем описание в зависимости от типа жидкости
   if (liquidType === 'Chaser Lux') {
     description.textContent = 'Премиальная линейка солей для POD-систем';
     icon.innerHTML = '<i class="fas fa-crown"></i>';
@@ -1547,12 +3605,13 @@ function openLiquidType(liquidType) {
     icon.innerHTML = '<i class="fas fa-leaf"></i>';
   }
   
-  // Фильтруем и отображаем товары
+  // Фильтруем товары
   const liquidProducts = products.filter(product => 
     product.category === 'Жидкости' && product.liquidType === liquidType
   );
   
   renderProducts(liquidProducts, 'liquid-type-products');
+  updateNavigation(0);
 }
 
 // Возврат к выбору жидкостей
@@ -1565,10 +3624,7 @@ function backToLiquids() {
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  updateNavigation(0);
 }
 
 // Открытие категории
@@ -1588,10 +3644,7 @@ function openCategory(categoryName) {
   const categoryProducts = products.filter(product => product.category === categoryName);
   renderProducts(categoryProducts, 'category-products');
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[0].classList.add('active');
+  updateNavigation(0);
 }
 
 // Возврат в магазин
@@ -1604,11 +3657,7 @@ function backToShop() {
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[0].classList.add('active');
-  
+  updateNavigation(0);
   renderProducts();
 }
 
@@ -1617,10 +3666,23 @@ function goToHome() {
   backToShop();
 }
 
+// Обновление навигации
+function updateNavigation(activeIndex) {
+  document.querySelectorAll('.nav-item').forEach((item, index) => {
+    if (index === activeIndex) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
 // Показать все товары
 function showAllProducts() {
   renderProducts(products);
 }
+
+// ========== КОРЗИНА ==========
 
 // Добавление в корзину
 function addToCart(productId) {
@@ -1631,9 +3693,7 @@ function addToCart(productId) {
     
     const badge = document.getElementById('cart-badge');
     badge.style.transform = 'scale(1.3)';
-    setTimeout(() => {
-      badge.style.transform = 'scale(1)';
-    }, 300);
+    setTimeout(() => badge.style.transform = 'scale(1)', 300);
     
     showNotification(`Товар "${product.name}" добавлен в корзину`);
   } else if (cart.some(item => item.id === productId)) {
@@ -1641,7 +3701,7 @@ function addToCart(productId) {
   }
 }
 
-// Открытие страницы корзины
+// Открытие корзины
 function openCartPage() {
   document.getElementById('shop-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
@@ -1651,11 +3711,7 @@ function openCartPage() {
   document.getElementById('favorites-page').style.display = 'none';
   document.getElementById('admin-panel').style.display = 'none';
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[1].classList.add('active');
-  
+  updateNavigation(1);
   renderCart();
 }
 
@@ -1702,13 +3758,13 @@ function renderCart() {
         <span>Итого:</span>
         <span class="cart-total-amount">${total.toFixed(2)} zł</span>
       </div>
-    <a href="https://t.me/managercloudm"> <button class="telegram-payment" onclick="window.location.href='https://t.me/managercloudm';"> </a>
-        <i class="fab fa-telegram" href="https://t.me/managercloudm"></i>
+      <button class="telegram-payment" onclick="window.location.href='@managercloudm';">
+        <i class="fab fa-telegram"></i>
         Оплатить через Telegram
       </button>
       <div class="payment-info">
         <p>Для оформления заказа напишите менеджеру в Telegram:</p>
-        <div class="telegram-username" href="https://t.me/managercloudm">@managercloudm</div>
+        <div class="telegram-username">@managercloudm</div>
         <p>Сообщите менеджеру список товаров из корзины и общую сумму</p>
       </div>
     </div>
@@ -1727,7 +3783,7 @@ function removeFromCart(productId) {
   }
 }
 
-// Оформление заказа через Telegram
+// Оформление заказа
 function processTelegramPayment() {
   if (cart.length === 0) {
     showNotification('Корзина пуста');
@@ -1738,8 +3794,9 @@ function processTelegramPayment() {
   const itemsList = cart.map(item => `- ${item.name}: ${item.price.toFixed(2)} zł`).join('\n');
   const message = `Заказ из VapeHub\n\nТовары:\n${itemsList}\n\nИтого: ${total.toFixed(2)} zł\n\nДля оформления заказа свяжитесь с менеджером: @managercloudm`;
   
-  showNotification(`Скопируйте информацию о заказе и отправьте менеджеру @managercloudm в Telegram`);
+  showNotification(`Информация о заказе скопирована. Отправьте менеджеру @jgxqq в Telegram`);
   
+  // Копирование в буфер
   const textArea = document.createElement('textarea');
   textArea.value = message;
   document.body.appendChild(textArea);
@@ -1748,7 +3805,9 @@ function processTelegramPayment() {
   document.body.removeChild(textArea);
 }
 
-// Избранное
+// ========== ИЗБРАННОЕ ==========
+
+// Переключение избранного
 function toggleFavorite(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
@@ -1767,6 +3826,7 @@ function toggleFavorite(productId) {
   saveData();
   updateFavoritesBadge();
   
+  // Обновляем иконку
   const favButtons = document.querySelectorAll(`[onclick="toggleFavorite(${productId})"]`);
   favButtons.forEach(btn => {
     if (index === -1) {
@@ -1783,12 +3843,11 @@ function toggleFavorite(productId) {
   }
 }
 
-// Открытие избранного из хедера
+// Открытие избранного
 function openFavorites() {
   openFavoritesPage();
 }
 
-// Открытие страницы избранного
 function openFavoritesPage() {
   document.getElementById('shop-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
@@ -1798,11 +3857,7 @@ function openFavoritesPage() {
   document.getElementById('favorites-page').style.display = 'block';
   document.getElementById('admin-panel').style.display = 'none';
   
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  document.querySelectorAll('.nav-item')[2].classList.add('active');
-  
+  updateNavigation(2);
   renderFavorites();
 }
 
@@ -1841,12 +3896,11 @@ function renderFavorites() {
   });
 }
 
-// Админ панель - переключение вкладок
+// ========== АДМИН-ПАНЕЛЬ ==========
+
+// Переключение вкладок админки
 function switchAdminTab(tabName) {
-  document.querySelectorAll('.admin-tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  
+  document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
   document.querySelectorAll('.admin-tab').forEach(tab => {
     if (tab.textContent === (tabName === 'products' ? 'Товары' : 'Категории')) {
       tab.classList.add('active');
@@ -1861,8 +3915,13 @@ function switchAdminTab(tabName) {
   }
 }
 
-// Админ панель
+// Открытие админ-панели
 function openAdmin() {
+  if (!isAdminAuthenticated) {
+    showPasswordOverlay();
+    return;
+  }
+  
   document.getElementById('admin-panel').style.display = 'block';
   document.getElementById('shop-page').style.display = 'none';
   document.getElementById('category-page').style.display = 'none';
@@ -1875,6 +3934,7 @@ function openAdmin() {
   renderAdminProductsList();
 }
 
+// Закрытие админ-панели
 function closeAdmin() {
   document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('shop-page').style.display = 'block';
@@ -1884,8 +3944,11 @@ function closeAdmin() {
   document.getElementById('liquid-type').value = '';
   document.getElementById('product-price').value = '';
   document.getElementById('category-name').value = '';
+  
+  updateNavigation(0);
 }
 
+// Добавление товара
 function addProduct() {
   const name = document.getElementById('product-name').value;
   const category = document.getElementById('product-category').value;
@@ -1902,7 +3965,7 @@ function addProduct() {
     return;
   }
   
-  // Определяем бренд по типу жидкости
+  // Определяем бренд
   let brand = '';
   if (category === 'Жидкости') {
     if (liquidType && liquidType.includes('Chaser')) brand = 'chaser';
@@ -1932,7 +3995,7 @@ function addProduct() {
   document.getElementById('product-price').value = '';
 }
 
-// Отображение списка товаров в админке для удаления
+// Отображение списка товаров в админке
 function renderAdminProductsList() {
   const container = document.getElementById('admin-products-list');
   
@@ -1965,12 +4028,12 @@ function renderAdminProductsList() {
   });
 }
 
-// Удаление товара из админки
+// Удаление товара
 function deleteProduct(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
   
-  if (confirm(`Вы уверены, что хотите удалить товар "${product.name}"?`)) {
+  if (confirm(`Удалить товар "${product.name}"?`)) {
     products = products.filter(p => p.id !== productId);
     cart = cart.filter(item => item.id !== productId);
     favorites = favorites.filter(item => item.id !== productId);
@@ -1991,7 +4054,7 @@ function deleteProduct(productId) {
   }
 }
 
-// Управление категориями
+// Добавление категории
 function addCategory() {
   const name = document.getElementById('category-name').value;
   const icon = document.getElementById('category-icon').value;
@@ -2002,7 +4065,7 @@ function addCategory() {
   }
   
   if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-    showNotification('Категория с таким названием уже существует');
+    showNotification('Такая категория уже существует');
     return;
   }
   
@@ -2065,7 +4128,7 @@ function deleteCategory(categoryId) {
   const productsInCategory = products.filter(p => p.category === category.name);
   
   if (productsInCategory.length > 0) {
-    if (!confirm(`В категории "${category.name}" есть ${productsInCategory.length} товаров. При удалении категории эти товары также будут удалены. Продолжить?`)) {
+    if (!confirm(`В категории "${category.name}" есть ${productsInCategory.length} товаров. Они тоже будут удалены. Продолжить?`)) {
       return;
     }
     
@@ -2082,7 +4145,9 @@ function deleteCategory(categoryId) {
   showNotification(`Категория "${category.name}" удалена`);
 }
 
-// Уведомление
+// ========== УТИЛИТЫ ==========
+
+// Уведомления
 function showNotification(message) {
   const notification = document.createElement('div');
   notification.style.cssText = `
@@ -2108,23 +4173,33 @@ function showNotification(message) {
   setTimeout(() => {
     notification.style.opacity = '0';
     notification.style.transition = 'opacity 0.5s';
-    setTimeout(() => {
-      document.body.removeChild(notification);
-    }, 500);
+    setTimeout(() => document.body.removeChild(notification), 500);
   }, 3000);
 }
 
-// Инициализация при загрузке
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
 document.addEventListener('DOMContentLoaded', function() {
+  // Проверяем сохраненную сессию админа
+  checkSavedSession();
+  
+  // Инициализация магазина
   renderProducts();
   updateCartBadge();
   updateFavoritesBadge();
   updateCategoriesDisplay();
   
+  // Анимации
   document.querySelectorAll('.category-card, .product-card').forEach((card, index) => {
     card.style.animationDelay = `${index * 0.1}s`;
   });
+  
+  // Закрытие окна пароля при клике на оверлей
+  document.getElementById('password-overlay').addEventListener('click', function(e) {
+    if (e.target.id === 'password-overlay') {
+      closePasswordOverlay();
+    }
+  });
 });
 </script>
-</body>
-</html>
+
+</div></body></html>
