@@ -1178,7 +1178,7 @@ const allProducts = [
   // ========== ПОДЫ ==========
   {
     id: 7,
-    name: 'VAPRESSO XROS 5 MINI',
+    name: 'VAPORESSO XROS 5 MINI',
     category: 'Поды',
     price: 120,
     image: 'https://i.imgur.com/PW1Pqyz.png',
@@ -1248,11 +1248,20 @@ function renderProducts(products) {
     const productCard = document.createElement('div');
     productCard.className = 'product-card';
     
-    // Определяем текст кнопки в зависимости от наличия вкусов
-    const buttonText = product.flavors && product.flavors.length > 0 ? 'Выбрать вкус' : 'В корзину';
-    const buttonAction = product.flavors && product.flavors.length > 0 ? 
-      `openFlavorModal(${product.id})` : 
-      `addToCartSimple(${product.id})`;
+    // Определяем текст кнопки в зависимости от категории и наличия вариантов
+    let buttonText = 'В корзину';
+    let buttonAction = `addToCartSimple(${product.id})`;
+    
+    if (product.flavors && product.flavors.length > 0) {
+      if (product.category === 'Поды') {
+        buttonText = 'Выбрать цвет';
+      } else if (product.category === 'Картриджи') {
+        buttonText = 'Выбрать Ω';
+      } else {
+        buttonText = 'Выбрать вкус';
+      }
+      buttonAction = `openFlavorModal(${product.id})`;
+    }
     
     productCard.innerHTML = `
       <div class="product-image">
@@ -1309,17 +1318,24 @@ function updateCartBadge() {
 
 // ========== МОДАЛЬНОЕ ОКНО ВКУСОВ ==========
 
-// Открыть модальное окно выбора вкуса
+// Открыть модальное окно выбора варианта
 function openFlavorModal(productId) {
   currentProduct = allProducts.find(p => p.id === productId);
   selectedFlavor = null;
   
   if (!currentProduct) return;
   
-  // Устанавливаем заголовок
-  document.getElementById('modal-title').textContent = `Выберите вкус (${currentProduct.name})`;
+  // Устанавливаем заголовок в зависимости от категории
+  let modalTitle = 'Выберите вкус';
+  if (currentProduct.category === 'Поды') {
+    modalTitle = 'Выберите цвет';
+  } else if (currentProduct.category === 'Картриджи') {
+    modalTitle = 'Выберите сопротивление';
+  }
   
-  // Заполняем список вкусов
+  document.getElementById('modal-title').textContent = `${modalTitle} (${currentProduct.name})`;
+  
+  // Заполняем список вариантов
   const flavorList = document.getElementById('flavor-list');
   flavorList.innerHTML = '';
   
