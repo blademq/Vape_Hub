@@ -659,7 +659,7 @@ header {
     <div class="logo-icon">
       <i class="fas fa-cloud"></i>
     </div>
-    <div class="logo-text">CloudHub<span class="currency">(zł)</span></div>
+    <div class="logo-text">CloudHub<span class="currency"></span></div>
   </div>
   
   <div class="header-actions">
@@ -707,6 +707,273 @@ header {
     </div>
   </div>
   
+<script>
+// ========== ОТПРАВКА ЗАКАЗА ==========
+
+// Функция для копирования заказа в буфер обмена
+function copyOrderToClipboard() {
+  if (cart.length === 0) {
+    showNotification('Корзина пуста');
+    return;
+  }
+  
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const orderNumber = 'ORD-' + Date.now().toString().slice(-6);
+  const timestamp = new Date().toLocaleString('ru-RU');
+  
+  // Формируем красивое сообщение для копирования
+  let message = `🛒 *НОВЫЙ ЗАКАЗ НА CLOUDHUB* 🛒\n`;
+  message += `📦 *Номер заказа:* ${orderNumber}\n`;
+  message += `⏰ *Дата и время:* ${timestamp}\n`;
+  message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+  message += `*ТОВАРЫ В ЗАКАЗЕ:*\n`;
+  
+  cart.forEach((item, index) => {
+    message += `${index + 1}. *${item.name}*\n`;
+    if (item.flavor) {
+      message += `   🍃 Вариант: ${item.flavor}\n`;
+    }
+    message += `   💰 Цена: ${item.price.toFixed(2)} zł\n`;
+    message += `   📂 Категория: ${item.category}\n`;
+    message += `\n`;
+  });
+  
+  message += `━━━━━━━━━━━━━━━━━━━━\n`;
+  message += `💰 *ИТОГО К ОПЛАТЕ:* ${total.toFixed(2)} zł\n\n`;
+  message += `👤 *Контакт менеджера:* @managercloudm\n`;
+  message += `📱 *Связь через:* Telegram`;
+  
+  try {
+    // Создаем временный textarea для копирования
+    const textArea = document.createElement('textarea');
+    textArea.value = message;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    // Пытаемся скопировать
+    const successful = document.execCommand('copy');
+    
+    // Удаляем textarea
+    document.body.removeChild(textArea);
+    
+    if (successful) {
+      // Показываем подробное уведомление
+      showDetailedNotification(
+        '✅ Заказ скопирован в буфер обмена!',
+        `Теперь откройте Telegram, перейдите к менеджеру @managercloudm и вставьте скопированный заказ в чат.\n\nНомер заказа: ${orderNumber}\nСумма: ${total.toFixed(2)} zł`,
+        'success'
+      );
+      
+      // Открываем Telegram
+      setTimeout(() => {
+        window.open('https://t.me/managercloudm', '_blank');
+      }, 1500);
+      
+      // Очищаем корзину
+      setTimeout(() => {
+        cart = [];
+        saveCart();
+        updateCartBadge();
+        renderCart();
+      }, 1000);
+      
+      // Сохраняем историю заказа
+      saveOrderHistory(orderNumber, total, message);
+    } else {
+      showNotification('❌ Не удалось скопировать заказ. Попробуйте еще раз.');
+    }
+  } catch (err) {
+    console.error('Ошибка при копировании:', err);
+    showNotification('❌ Ошибка при копировании. Используйте альтернативный способ.');
+    
+    // Альтернативный способ для старых браузеров
+    fallbackCopyOrder(message);
+  }
+}
+
+// Функция для показа подробного уведомления
+function showDetailedNotification(title, message, type = 'info') {
+  // Создаем контейнер для уведомления
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: ${type === 'success' ? 'var(--success)' : 'var(--primary)'};
+    color: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    font-weight: 600;
+    animation: fadeIn 0.3s;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+  `;
+  
+  notification.innerHTML = `
+    <div style="margin-bottom: 20px;">
+      <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}" style="font-size: 50px; color: rgba(255, 255, 255, 0.9); margin-bottom: 15px;"></i>
+      <h3 style="margin-bottom: 15px; font-size: 22px;">${title}</h3>
+      <p style="font-size: 15px; line-height: 1.5; opacity: 0.9; margin-bottom: 20px;">${message}</p>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center;">
+      <button onclick="this.parentElement.parentElement.remove(); openTelegramDirectly()" style="background: white; color: var(--primary); border: none; padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; flex: 1;">
+        <i class="fab fa-telegram" style="margin-right: 8px;"></i>Открыть Telegram
+      </button>
+      <button onclick="this.parentElement.parentElement.remove()" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.4); padding: 12px 25px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+        Закрыть
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Добавляем анимацию появления
+  notification.style.opacity = '0';
+  notification.style.transition = 'opacity 0.3s';
+  setTimeout(() => notification.style.opacity = '1', 10);
+  
+  // Автоматически закрываем через 10 секунд
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.opacity = '0';
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.parentElement.removeChild(notification);
+        }
+      }, 300);
+    }
+  }, 10000);
+}
+
+// Функция для открытия Telegram напрямую
+function openTelegramDirectly() {
+  window.open('https://t.me/managercloudm', '_blank');
+}
+
+// Резервная функция копирования для старых браузеров
+function fallbackCopyOrder(message) {
+  // Показываем сообщение в модальном окне для ручного копирования
+  const modalHTML = `
+    <div id="manual-copy-modal" class="modal-overlay active">
+      <div class="modal-container" style="max-width: 500px;">
+        <div class="modal-header">
+          <div class="modal-title">Скопируйте заказ вручную</div>
+          <button class="modal-close" onclick="closeManualCopyModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="modal-content">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <i class="fas fa-copy" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+            <h3 style="margin-bottom: 10px;">Заказ готов к отправке</h3>
+            <p style="color: var(--gray); margin-bottom: 20px;">Выделите текст ниже и нажмите Ctrl+C (Cmd+C на Mac)</p>
+          </div>
+          
+          <div style="background: var(--dark); border-radius: 10px; padding: 15px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+            <pre style="white-space: pre-wrap; word-wrap: break-word; font-family: monospace; font-size: 14px; color: var(--light); margin: 0;">${message}</pre>
+          </div>
+          
+          <div style="background: rgba(42, 171, 238, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <p style="margin-bottom: 10px; color: var(--gray);"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>После копирования:</p>
+            <ol style="padding-left: 20px; color: var(--gray);">
+              <li>Откройте Telegram</li>
+              <li>Найдите менеджера @managercloudm</li>
+              <li>Вставьте заказ в чат (Ctrl+V или Cmd+V)</li>
+              <li>Отправьте сообщение</li>
+            </ol>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button class="btn-primary" onclick="openTelegramDirectly()">
+            <i class="fab fa-telegram"></i>
+            Открыть Telegram
+          </button>
+          <button class="btn-secondary" onclick="closeManualCopyModal()">
+            Закрыть
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Добавляем модальное окно
+  const modalContainer = document.createElement('div');
+  modalContainer.innerHTML = modalHTML;
+  document.body.appendChild(modalContainer);
+  
+  // Очищаем корзину
+  cart = [];
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+// Закрыть модальное окно ручного копирования
+function closeManualCopyModal() {
+  const modal = document.getElementById('manual-copy-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => {
+      if (modal.parentElement) {
+        modal.parentElement.removeChild(modal);
+      }
+    }, 300);
+  }
+}
+
+// Сохранить историю заказа
+function saveOrderHistory(orderNumber, total, message) {
+  // Получаем текущую историю
+  let orderHistory = JSON.parse(localStorage.getItem('vapeOrderHistory') || '[]');
+  
+  // Добавляем новый заказ
+  const order = {
+    number: orderNumber,
+    date: new Date().toISOString(),
+    total: total,
+    itemsCount: cart.length,
+    items: [...cart], // Копируем текущую корзину
+    message: message
+  };
+  
+  orderHistory.unshift(order); // Добавляем в начало
+  
+  // Сохраняем только последние 50 заказов
+  if (orderHistory.length > 50) {
+    orderHistory = orderHistory.slice(0, 50);
+  }
+  
+  localStorage.setItem('vapeOrderHistory', JSON.stringify(orderHistory));
+}
+
+// Обновить функцию processTelegramPayment в корзине
+// Заменяем старую функцию на новую
+function processTelegramPayment() {
+  copyOrderToClipboard();
+}
+
+// Также обновляем HTML для кнопки в корзине
+// Находим в коде корзины и заменяем:
+// Старый код:
+// <button class="telegram-payment" onclick="processTelegramPayment()">
+//   <i class="fab fa-telegram"></i>
+//   Оплатить через Telegram
+// </button>
+
+// Новый код:
+// <button class="telegram-payment" onclick="copyOrderToClipboard()">
+//   <i class="fas fa-copy"></i>
+//   Скопировать заказ и перейти в Telegram
+// </button>
+</script>
+
   <!-- Страница корзины -->
   <div id="cart-page" class="cart-page">
     <div class="back-btn" onclick="goToHome()">
@@ -1236,10 +1503,10 @@ function renderCart() {
         <span>Итого:</span>
         <span class="cart-total-amount">${total.toFixed(2)} zł</span>
       </div>
-      <button class="telegram-payment" onclick="processTelegramPayment()">
-        <i class="fab fa-telegram"></i>
-        Оплатить через Telegram
-      </button>
+      <button class="telegram-payment" onclick="copyOrderToClipboard()">
+  <i class="fas fa-copy"></i>
+  Скопировать заказ и перейти в Telegram
+</button>
       <div class="payment-info">
         <p>Для оформления заказа напишите менеджеру в Telegram:</p>
         <div class="telegram-username">@managercloudm</div>
@@ -1313,6 +1580,8 @@ function showNotification(message) {
   `;
   notification.textContent = message;
   
+
+
   document.body.appendChild(notification);
   
   // Через 3 секунды удаляем уведомление
